@@ -75,10 +75,22 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 @media print {
   body { background:#fff; padding:0; }
   .toolbar, .save-status { display:none !important; }
-  .venue-wrap { box-shadow:none; }
-  @page { size:A4 portrait; margin:6mm; }
-  .venue-wrap-outer { max-width:none; overflow:visible; }
-  .round-wrap, .sq-wrap, .long-h { page-break-inside:avoid; break-inside:avoid; }
+  .venue-wrap-outer, .venue-wrap-outer * { display:none !important; }
+  @page { size:A4 landscape; margin:6mm; }
+  .print-summary { display:block !important; }
+}
+.print-summary { display:none; }
+@media print {
+  .print-summary { column-count:5; column-gap:8px; font-size:8px; }
+  .psum-card { break-inside:avoid; -webkit-column-break-inside:avoid; margin-bottom:6px; border:1px solid #bbb; border-radius:3px; padding:3px 4px; }
+  .psum-title { font-weight:700; font-size:9px; border-bottom:1px solid #999; margin-bottom:2px; padding-bottom:1px; }
+  .psum-title .warn-tag { font-size:7px; }
+  .psum-card table { width:100%; border-collapse:collapse; }
+  .psum-card td { padding:0.5px 2px; font-size:7px; line-height:1.3; border-bottom:1px dotted #eee; vertical-align:top; }
+  .psum-card td.psum-seatno { width:14px; color:#999; }
+  .psum-card td.psum-name { max-width:40px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .psum-card td.psum-tags { width:20px; text-align:right; }
+  .psum-title-page { column-span:all; text-align:center; font-size:12px; font-weight:700; margin-bottom:6px; }
 }
 @media (max-width:800px) {
   .venue-wrap { overflow-x:auto; }
@@ -177,6 +189,10 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 
   </div>
 </div></div>
+
+<div class="print-summary" id="printSummary">
+  <div class="psum-title-page" id="printSummaryTitle">婚宴座位表 — 大院子</div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -453,6 +469,31 @@ document.addEventListener('DOMContentLoaded', function () {
       tables[k].seats.forEach(function(s){ if (s.name.trim()) count++; });
     });
     document.getElementById('seatedCount').textContent = count;
+    renderPrintSummary();
+  }
+
+  // ── 列印用：純表格彙整版，取代空間版面圖，確保能印在一頁內、字看得清楚 ──
+  function renderPrintSummary() {
+    var el = document.getElementById('printSummary');
+    if (!el) return;
+    var dishMap = {};
+    dishOptions().forEach(function(o){ if (o.v) dishMap[o.v] = o.l; });
+    var g = ORDER.groomName, b = ORDER.brideName, d = ORDER.weddingDate, s = ORDER.mealSession;
+    document.getElementById('printSummaryTitle').textContent =
+      '婚宴座位表 — 大院子　' + (g||'') + (g||b?' & ':'') + (b||'') + (d?'　'+d:'') + (s?' '+s:'');
+
+    var html = '<div class="psum-title-page">婚宴座位表 — 大院子　' + (g||'') + (g||b?' & ':'') + (b||'') + (d?'　'+d:'') + (s?' '+s:'') + '</div>';
+    TABLE_DEFS.forEach(function(def){
+      var t = tables[def.key];
+      if (!t) return;
+      var rows = t.seats.map(function(sVal, i){
+        var tag = (sVal.veg && sVal.kid) ? '素/童' : sVal.veg ? '素' : sVal.kid ? '童' : '';
+        var dish = dishMap[sVal.dish] || '';
+        return '<tr><td class="psum-seatno">' + (i+1) + '</td><td class="psum-name">' + (sVal.name || '') + '</td><td>' + dish + '</td><td class="psum-tags">' + tag + '</td></tr>';
+      }).join('');
+      html += '<div class="psum-card"><div class="psum-title">' + t.label + (def.key==='study' ? ' <span class="warn-tag">(看不到舞台)</span>' : '') + '（' + t.seats.length + '人）</div><table>' + rows + '</table></div>';
+    });
+    el.innerHTML = html;
   }
 
   document.getElementById('mainCapSelect').onchange = function(){
