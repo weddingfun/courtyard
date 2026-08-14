@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大院子 座位表</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:-apple-system,"PingFang TC","Helvetica Neue",sans-serif; background:#F0EDE8; color:#1a1a1a; padding:10px; font-size:12px; }
+h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
+.sub { text-align:center; font-size:10px; color:#999; letter-spacing:1px; margin-bottom:8px; }
+.toolbar { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:8px; align-items:center; }
+.btn { background:#1a1a1a; color:#fff; border:none; padding:7px 12px; border-radius:5px; font-size:11px; cursor:pointer; }
+.btn.ghost { background:#fff; color:#1a1a1a; border:1px solid #bbb; }
+.cap-select { display:flex; align-items:center; gap:5px; border:1px solid #bbb; border-radius:6px; padding:4px 8px; font-size:11px; background:#fff; }
+.cap-select select { border:none; font-size:11px; background:transparent; }
+.toggle-group { display:flex; border:1px solid #1a1a1a; border-radius:6px; overflow:hidden; }
+.toggle-group button { border:none; background:#fff; color:#1a1a1a; padding:7px 12px; font-size:11px; cursor:pointer; }
+.toggle-group button.active { background:#1a1a1a; color:#fff; }
+.toggle-group button:not(:last-child) { border-right:1px solid #1a1a1a; }
+.stat { text-align:center; font-size:11px; color:#666; margin-bottom:4px; }
+.stat b { color:#1a1a1a; }
+.legend { display:flex; gap:14px; justify-content:center; margin-bottom:8px; flex-wrap:wrap; }
+.leg { display:flex; align-items:center; gap:4px; font-size:10px; color:#555; }
+.leg-box { width:12px; height:12px; border-radius:3px; border:1px solid #ccc; }
+.save-status { text-align:center; font-size:10px; color:#999; margin-bottom:6px; height:14px; }
+.save-status.saving { color:#c8860a; }
+.save-status.saved { color:#2d8a3e; }
+.save-status.error { color:#c0392b; }
+
+.venue-wrap-outer { max-width:1450px; margin:0 auto; overflow-x:auto; display:flex; justify-content:center; }
+.venue-wrap { width:760px; flex-shrink:0; background:#fff; border-radius:10px; padding:14px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+.floor-plan { position:relative; width:750px; height:1200px; margin:0 auto; background:#FCFBF8; border:1.5px solid #ddd; border-radius:6px; overflow:visible; }
+
+.zone-label { position:absolute; font-size:10px; color:#999; letter-spacing:2px; text-align:center; }
+.door-bar { position:absolute; background:#1a1a1a; color:#fff; font-size:10px; text-align:center; padding:5px 0; border-radius:4px; letter-spacing:3px; }
+.corridor { position:absolute; background:repeating-linear-gradient(to bottom, #eee 0 6px, transparent 6px 12px); border-left:1px dashed #ccc; border-right:1px dashed #ccc; }
+.corridor-h { position:absolute; background:repeating-linear-gradient(to right, #eee 0 6px, transparent 6px 12px); border-top:1px dashed #ccc; border-bottom:1px dashed #ccc; }
+.corridor-arrow { position:absolute; font-size:16px; color:#bbb; text-align:center; }
+.bar-box { position:absolute; background:#9a9a9a; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; letter-spacing:3px; writing-mode:vertical-rl; }
+.sound-box { position:absolute; background:#1a1a1a; color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; border-radius:4px; letter-spacing:1px; }
+.restroom-note { position:absolute; font-size:9px; color:#888; text-align:center; }
+.warn-tag { color:#c0392b; font-weight:700; }
+
+/* 圓桌（N位，動態角度排列） */
+.round-wrap { position:absolute; }
+.round-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; border:1.5px solid #888; background:#FAFAFA; display:flex; align-items:center; justify-content:center; }
+.round-table .table-mid { font-size:10px; font-weight:700; color:#666; cursor:pointer; white-space:nowrap; background:#fff; padding:2px 5px; border-radius:8px; border:1px solid #ccc; }
+.round-wrap .r-seat { position:absolute; width:70px; transform:translate(-50%,-50%); }
+
+/* 方桌（4位） */
+.sq-wrap { position:absolute; }
+.sq-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border:1.5px solid #B8944A; background:#FBF5E6; border-radius:6px; display:flex; align-items:center; justify-content:center; }
+.sq-table .table-mid { font-size:10px; font-weight:700; color:#8a6a20; cursor:pointer; white-space:nowrap; background:#fff; padding:2px 5px; border-radius:8px; border:1px solid #d8b878; }
+.sq-wrap .r-seat { position:absolute; width:66px; transform:translate(-50%,-50%); }
+
+/* 長桌（水平方向，座位分上下兩排） */
+.long-h { position:absolute; border:1.5px solid #5A8A52; border-radius:8px; background:#F2FAF0; }
+.long-h .table-bar-h { position:absolute; left:0; top:50%; transform:translateY(-50%); width:100%; text-align:center; font-size:10px; color:#3d6636; font-weight:700; letter-spacing:2px; cursor:pointer; }
+.long-h .lh-row { position:absolute; left:0; width:100%; display:flex; justify-content:space-around; padding:0 4px; }
+.long-h .lh-row.top { top:-30px; }
+.long-h .lh-row.bottom { bottom:-30px; }
+.long-h .lh-seat { width:64px; }
+
+.seat-cell { display:flex; flex-direction:column; gap:2px; }
+.seat { font-size:9px; background:#F0F0F0; border-radius:3px; padding:2px 3px; cursor:text; white-space:nowrap; overflow:hidden; line-height:1.4; border:1px solid transparent; outline:none; width:100%; box-sizing:border-box; font-family:inherit; text-align:center; }
+.seat:hover { background:#E8E4DC; }
+.seat.empty-s { color:#bbb; }
+.seat.filled { background:#EDEDED; color:#1a1a1a; }
+.seat.veg { background:#D4EDCC; color:#2d6a21; }
+.seat.kid { background:#CFE3F5; color:#1a4a7a; }
+.seat.veg.kid { background:linear-gradient(135deg,#D4EDCC 50%,#CFE3F5 50%); color:#1a1a1a; }
+.dish-select { font-size:11px; padding:2px 1px; border:1px solid #ddd; border-radius:3px; width:100%; background:#fff; }
+
+@media print {
+  body { background:#fff; padding:0; }
+  .toolbar, .save-status { display:none !important; }
+  .venue-wrap { box-shadow:none; }
+  @page { size:A4 portrait; margin:6mm; }
+  .venue-wrap-outer { max-width:none; overflow:visible; }
+}
+@media (max-width:800px) {
+  .venue-wrap { overflow-x:auto; }
+}
+</style>
+</head>
+<body>
+
+<h1>婚宴座位表</h1>
+<div class="sub">大院子</div>
+<div class="sub" id="orderInfo" style="font-size:13px;font-weight:700;color:#1a1a1a;margin-top:2px;">載入中…</div>
+
+<div class="toolbar">
+  <div class="cap-select">主桌
+    <select id="mainCapSelect">
+      <option value="18">18人</option><option value="20">20人</option><option value="22">22人</option>
+    </select>
+  </div>
+  <div class="cap-select">九桌
+    <select id="t9CapSelect">
+      <option value="10">10人</option><option value="12">12人</option>
+    </select>
+  </div>
+  <button class="btn ghost" onclick="window.print()">🖨️ 列印</button>
+</div>
+
+<div class="stat">已安排 <b id="seatedCount">0</b> 人</div>
+
+<div class="legend">
+  <div class="leg"><span class="leg-box" style="background:#D4EDCC"></span>素食</div>
+  <div class="leg"><span class="leg-box" style="background:#CFE3F5"></span>兒童椅</div>
+  <div class="leg"><span class="leg-box" style="background:#EDEDED"></span>已填寫</div>
+</div>
+<div class="save-status" id="saveStatus"></div>
+
+<div class="venue-wrap-outer"><div class="venue-wrap">
+  <div class="floor-plan" id="floorPlan">
+
+    <div class="door-bar" style="left:475px; top:10px; width:130px;">大門口（舞台區）</div>
+    <div class="corridor" style="left:530px; top:45px; width:30px; height:955px;"></div>
+    <div class="corridor-arrow" style="left:530px; top:965px;">↓</div>
+
+    <!-- 左側：主桌 / 雅座 / 音控台 / 吧台 -->
+    <div class="long-h" id="mainTableBox" style="left:20px; top:70px; width:400px; height:70px;">
+      <div class="table-bar-h" onclick="renameTable('mainTable')">主桌</div>
+    </div>
+
+    <div class="sound-box" style="left:340px; top:190px; width:80px; height:80px;">音控台</div>
+    <div class="round-wrap" id="yz1Wrap" style="left:60px; top:190px; width:100px; height:100px;">
+      <div class="round-table" id="yz1Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('yz1')">雅座一</div></div>
+    </div>
+    <div class="round-wrap" id="yz2Wrap" style="left:190px; top:190px; width:100px; height:100px;">
+      <div class="round-table" id="yz2Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('yz2')">雅座二</div></div>
+    </div>
+
+    <div class="bar-box" style="left:60px; top:320px; width:360px; height:680px;">吧　　台　　區</div>
+
+    <!-- 化妝室走道：在吧台區與書房/九桌之間，往左手邊走 -->
+    <div class="corridor-h" style="left:20px; top:1000px; width:570px; height:60px;"></div>
+    <div class="restroom-note" style="left:30px; top:1015px; width:60px;">🚻</div>
+    <div class="restroom-note" style="left:100px; top:1020px; width:220px; text-align:left;">← 往化妝室 / 洗手間</div>
+
+    <!-- 書房 + 九桌：同一列並排 -->
+    <div class="long-h" id="studyBox" style="left:20px; top:1090px; width:230px; height:70px;">
+      <div class="table-bar-h" onclick="renameTable('study')">書房　<span class="warn-tag">(看不到舞台)</span></div>
+    </div>
+    <div class="long-h" id="t9Box" style="left:270px; top:1090px; width:460px; height:70px;">
+      <div class="table-bar-h" onclick="renameTable('t9')">九桌</div>
+    </div>
+
+    <!-- 右側：一～八桌，單一直列，垂直範圍對齊左側（主桌～吧台底部，不超過化妝室走道） -->
+    <div class="round-wrap" id="t1Wrap" style="left:590px; top:60px; width:130px; height:130px;">
+      <div class="round-table" id="t1Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t1')">一桌</div></div>
+    </div>
+    <div class="round-wrap" id="t2Wrap" style="left:590px; top:200px; width:130px; height:130px;">
+      <div class="round-table" id="t2Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t2')">二桌</div></div>
+    </div>
+    <div class="sq-wrap" id="t3Wrap" style="left:590px; top:340px; width:120px; height:110px;">
+      <div class="sq-table" id="t3Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t3')">三桌</div></div>
+    </div>
+    <div class="sq-wrap" id="t4Wrap" style="left:590px; top:460px; width:120px; height:110px;">
+      <div class="sq-table" id="t4Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t4')">四桌</div></div>
+    </div>
+    <div class="sq-wrap" id="t5Wrap" style="left:590px; top:580px; width:120px; height:110px;">
+      <div class="sq-table" id="t5Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t5')">五桌</div></div>
+    </div>
+    <div class="sq-wrap" id="t6Wrap" style="left:590px; top:700px; width:120px; height:110px;">
+      <div class="sq-table" id="t6Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t6')">六桌</div></div>
+    </div>
+    <div class="round-wrap" id="t7Wrap" style="left:590px; top:820px; width:130px; height:130px;">
+      <div class="round-table" id="t7Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t7')">七桌</div></div>
+    </div>
+    <div class="round-wrap" id="t8Wrap" style="left:590px; top:960px; width:130px; height:130px;">
+      <div class="round-table" id="t8Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t8')">八桌</div></div>
+    </div>
+
+  </div>
+</div></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── GAS 串接（沿用共用後端，venue無關）──────────────────
+  var GAS_MODE = true;
+  var BASE_URL = 'https://script.google.com/macros/s/AKfycbwV3pXKiwOBCbvv_W0ysv1_mjGsAnK4VqKQI5-jAbjDWGgEaBpVJufiszaVhYsc73Lg/exec';
+  var TOKEN = (function(){
+    var m = location.search.match(/[?&]token=([^&]+)/);
+    return m ? decodeURIComponent(m[1]) : null;
+  })();
+
+  function setStatus(cls, msg) {
+    var el = document.getElementById('saveStatus');
+    el.className = 'save-status ' + cls; el.textContent = msg;
+  }
+  function timeStr() { var d=new Date(); return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); }
+
+  var saveTimer = null;
+  function scheduleSave() {
+    if (!GAS_MODE || !TOKEN) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 1200);
+  }
+  function doSave() {
+    if (!TOKEN) return;
+    setStatus('saving', '儲存中…');
+    var payload = { mainCap: mainCap, t9Cap: t9Cap, tables: tables };
+    var seatStr = JSON.stringify(payload);
+    var getUrl = BASE_URL + '?action=saveSeatData&token=' + encodeURIComponent(TOKEN) + '&seat=' + encodeURIComponent(seatStr);
+    if (getUrl.length <= 2000) {
+      fetch(getUrl).then(function(){ setStatus('saved', '✓ 已儲存 ' + timeStr()); })
+        .catch(function(e){ setStatus('error', '儲存失敗：' + e.message); });
+    } else {
+      fetch(BASE_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ token: TOKEN, action: 'saveSeatData', seat: payload })
+      }).then(function(){ setStatus('saved', '✓ 已儲存 ' + timeStr()); })
+        .catch(function(e){ setStatus('error', '儲存失敗：' + e.message); });
+    }
+  }
+
+  // ── 菜單資料（與 Form_courtyard.html 保持同步，用於菜色下拉短碼）──
+  var NEW_MENU = {
+    A: ['肋眼牛','伊比利豬','鮭魚'], B: ['肋眼牛','爐烤春雞','伊比利豬'], C: ['牛小排','伊比利豬','龍蝦'], D: ['龍蝦','牛小排'],
+  };
+  var OLD_MENU = {
+    A: ['菲力牛排','法式鴨胸','嫩煎鮭魚'], B: ['香料春雞','沙朗牛排','燻烤豬'], C: ['牛小排','爐烤豬腳','奶油龍蝦'], D: ['龍蝦拌牛小排'],
+  };
+  var VEG_OPTS = ['素-彩椒盅','素-茄子盅','素-南瓜盅'];
+
+  function dishOptions() {
+    var version = (ORDER.menuPackage === '舊') ? 'old' : 'new';
+    var tier = (FORM.menuTier) || '';
+    var mains = tier ? (version === 'old' ? OLD_MENU : NEW_MENU)[tier] : null;
+    var opts = [{v:'',l:'菜色'}];
+    if (mains) mains.forEach(function(m,i){ opts.push({v:'main'+i, l:m}); });
+    VEG_OPTS.forEach(function(v,i){ opts.push({v:'veg'+i, l:v}); });
+    return opts;
+  }
+
+  // ── 資料模型 ──────────────────────────────────
+  var ORDER = {};
+  var FORM = {};
+  var mainCap = 18;
+  var t9Cap = 10;
+  // 場圖版型由主控表 venueLayoutVariant 欄位決定（新人端不可見/不可改，避免造成困擾）
+  // 欄位值：'整套音響' → plan（音控台/雅座二/雅座一）；'單顆音響'或其他（含空白）→ venue（雅座二/雅座一/音控台，預設）
+  var layoutVariant = 'venue';
+  var tables = {}; // { mainTable:{label,seats:[]}, yz1:{...}, ... }
+
+  var LAYOUT_POS = {
+    venue: { yz1: 200, yz2: 60, sound: 340 },
+    plan:  { sound: 60, yz2: 200, yz1: 340 },
+  };
+  function applyLayoutVariant(v) {
+    layoutVariant = v;
+    var pos = LAYOUT_POS[v];
+    document.getElementById('yz1Wrap').style.left = pos.yz1 + 'px';
+    document.getElementById('yz2Wrap').style.left = pos.yz2 + 'px';
+    document.querySelector('.sound-box').style.left = pos.sound + 'px';
+  }
+
+  function mkSeats(n) {
+    var a = [];
+    for (var i=0;i<n;i++) a.push({ name:'', dish:'', veg:false, kid:false });
+    return a;
+  }
+
+  var TABLE_DEFS = [
+    { key:'mainTable', label:'主桌', n:18 },
+    { key:'yz1', label:'雅座一', n:2 },
+    { key:'yz2', label:'雅座二', n:2 },
+    { key:'study', label:'書房', n:6 },
+    { key:'t1', label:'一桌', n:6 },
+    { key:'t2', label:'二桌', n:6 },
+    { key:'t3', label:'三桌', n:4 },
+    { key:'t4', label:'四桌', n:4 },
+    { key:'t5', label:'五桌', n:4 },
+    { key:'t6', label:'六桌', n:4 },
+    { key:'t7', label:'七桌', n:6 },
+    { key:'t8', label:'八桌', n:6 },
+    { key:'t9', label:'九桌', n:10 },
+  ];
+
+  function seed() {
+    tables = {};
+    TABLE_DEFS.forEach(function(def){
+      var n = def.key === 'mainTable' ? mainCap : (def.key === 't9' ? t9Cap : def.n);
+      tables[def.key] = { label: def.label, customLabel: false, seats: mkSeats(n) };
+    });
+  }
+
+  function resizeSeats(key, n) {
+    var t = tables[key];
+    var cur = t.seats;
+    if (n > cur.length) { for (var i=cur.length;i<n;i++) cur.push({name:'',dish:'',veg:false,kid:false}); }
+    else if (n < cur.length) { t.seats = cur.slice(0, n); }
+  }
+
+  function renameTable(key) {
+    var t = tables[key];
+    var v = prompt('桌名', t.label);
+    if (v !== null && v.trim()) { t.label = v.trim(); t.customLabel = true; render(); scheduleSave(); }
+  }
+  window.renameTable = renameTable;
+
+  // ── 座位輸入格 ──────────────────────
+  function seatClass(s) {
+    return 'seat' + (!s.name.trim() ? ' empty-s' : (s.veg && s.kid) ? ' veg kid' : s.veg ? ' veg' : s.kid ? ' kid' : ' filled');
+  }
+
+  function makeSeatCell(key, idx) {
+    var t = tables[key];
+    var s = t.seats[idx];
+    var wrap = document.createElement('div');
+    wrap.className = 'seat-cell';
+
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = seatClass(s);
+    inp.value = s.name.trim();
+    inp.placeholder = '座' + (idx+1);
+    var composing = false;
+    inp.addEventListener('compositionstart', function(){ composing = true; });
+    inp.addEventListener('compositionend', function(){ composing = false; });
+    inp.onblur = function(){
+      if (composing) return;
+      s.name = inp.value.trim();
+      inp.value = s.name;
+      inp.className = seatClass(s);
+      updateStat(); scheduleSave();
+    };
+    inp.onkeydown = function(e){ if (e.key==='Enter' && !composing) inp.blur(); };
+    inp.oncontextmenu = function(e){ e.preventDefault(); e.stopPropagation(); showTagMenu(e, s, inp); };
+    var pressTimer=null, touchX=0, touchY=0;
+    inp.addEventListener('touchstart', function(e){
+      touchX = e.touches[0].clientX; touchY = e.touches[0].clientY;
+      pressTimer = setTimeout(function(){ showTagMenu({clientX:touchX,clientY:touchY}, s, inp); }, 600);
+    }, {passive:true});
+    inp.addEventListener('touchend', function(){ clearTimeout(pressTimer); }, {passive:true});
+    inp.addEventListener('touchmove', function(){ clearTimeout(pressTimer); }, {passive:true});
+    wrap.appendChild(inp);
+
+    var sel = document.createElement('select');
+    sel.className = 'dish-select';
+    dishOptions().forEach(function(o){
+      var op = document.createElement('option'); op.value=o.v; op.textContent=o.l; sel.appendChild(op);
+    });
+    sel.value = s.dish || '';
+    sel.onchange = function(){ s.dish = sel.value; scheduleSave(); };
+    wrap.appendChild(sel);
+
+    return wrap;
+  }
+
+  function refreshSeat(inp, s) {
+    inp.value = s.name; inp.className = seatClass(s);
+    updateStat(); scheduleSave();
+  }
+
+  function showTagMenu(e, s, seatInp) {
+    var old = document.getElementById('tagMenu'); if (old) old.remove();
+    var menu = document.createElement('div'); menu.id = 'tagMenu';
+    menu.style.cssText = 'position:fixed;z-index:200;background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:4px;box-shadow:0 4px 16px rgba(0,0,0,.15);font-size:12px;min-width:110px;';
+    menu.style.left = Math.min(e.clientX, window.innerWidth-130)+'px';
+    menu.style.top = Math.min(e.clientY, window.innerHeight-110)+'px';
+    function mkItem(label, active, toggle) {
+      var b = document.createElement('button');
+      b.style.cssText = 'border:1px solid #ddd;border-radius:5px;padding:5px 8px;cursor:pointer;text-align:left;background:'+(active?'#D4EDCC':'#fff')+';color:'+(active?'#2d6a21':'#333')+';';
+      b.textContent = (active?'✓ ':'')+label;
+      b.onclick = function(){ toggle(); menu.remove(); refreshSeat(seatInp,s); };
+      return b;
+    }
+    menu.appendChild(mkItem('素食', s.veg, function(){ s.veg=!s.veg; }));
+    menu.appendChild(mkItem('兒童椅', s.kid, function(){ s.kid=!s.kid; }));
+    var sep = document.createElement('hr'); sep.style.cssText='border:none;border-top:1px solid #eee;margin:2px 0;'; menu.appendChild(sep);
+    var clr = document.createElement('button');
+    clr.style.cssText = 'border:1px solid #ddd;border-radius:5px;padding:5px 8px;cursor:pointer;text-align:left;background:#fff;color:#c0392b;';
+    clr.textContent = '清除';
+    clr.onclick = function(){ s.name=''; s.dish=''; s.veg=false; s.kid=false; refreshSeat(seatInp,s); menu.remove(); };
+    menu.appendChild(clr);
+    document.body.appendChild(menu);
+    setTimeout(function(){ document.addEventListener('click', function h(){ menu.remove(); document.removeEventListener('click',h); }); }, 10);
+  }
+
+  // ── 桌型渲染 ──────────────────────
+  function positionsRound(n, wrapSize, tableSize) {
+    // 從正上方(12點鐘)開始順時針均分
+    var r = wrapSize/2 - 6;
+    var cx = wrapSize/2, cy = wrapSize/2;
+    var pos = [];
+    for (var i=0;i<n;i++) {
+      var angle = (-90 + i * (360/n)) * Math.PI/180;
+      pos.push({ x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) });
+    }
+    return pos;
+  }
+
+  function renderRound(key, wrapEl, tableEl, wrapSize) {
+    var t = tables[key];
+    var n = t.seats.length;
+    var pos = positionsRound(n, wrapSize, 0);
+    // 先清掉舊座位（保留 table 圓餅本身）
+    Array.prototype.slice.call(wrapEl.querySelectorAll('.r-seat')).forEach(function(el){ el.remove(); });
+    tableEl.querySelector('.table-mid').textContent = t.label;
+    for (var i=0;i<n;i++) {
+      var cell = makeSeatCell(key, i);
+      cell.classList.add('r-seat');
+      cell.style.left = pos[i].x + 'px';
+      cell.style.top = pos[i].y + 'px';
+      wrapEl.appendChild(cell);
+    }
+  }
+
+  function renderLongH(key, boxEl, seatWidth) {
+    var t = tables[key];
+    var n = t.seats.length;
+    var half = Math.ceil(n/2);
+    boxEl.querySelector('.table-bar-h').innerHTML = (key==='study') ? (t.label + '　<span class="warn-tag">(看不到舞台)</span>') : t.label;
+    Array.prototype.slice.call(boxEl.querySelectorAll('.lh-row')).forEach(function(el){ el.remove(); });
+    var topRow = document.createElement('div'); topRow.className='lh-row top';
+    var botRow = document.createElement('div'); botRow.className='lh-row bottom';
+    for (var i=0;i<n;i++) {
+      var cell = makeSeatCell(key, i);
+      cell.classList.add('lh-seat');
+      (i < half ? topRow : botRow).appendChild(cell);
+    }
+    boxEl.appendChild(topRow);
+    boxEl.appendChild(botRow);
+  }
+
+  function render() {
+    renderRound('yz1', document.getElementById('yz1Wrap'), document.getElementById('yz1Table'), 110);
+    renderRound('yz2', document.getElementById('yz2Wrap'), document.getElementById('yz2Table'), 110);
+    renderRound('t1', document.getElementById('t1Wrap'), document.getElementById('t1Table'), 140);
+    renderRound('t2', document.getElementById('t2Wrap'), document.getElementById('t2Table'), 140);
+    renderRound('t3', document.getElementById('t3Wrap'), document.getElementById('t3Table'), 120);
+    renderRound('t4', document.getElementById('t4Wrap'), document.getElementById('t4Table'), 120);
+    renderRound('t5', document.getElementById('t5Wrap'), document.getElementById('t5Table'), 120);
+    renderRound('t6', document.getElementById('t6Wrap'), document.getElementById('t6Table'), 120);
+    renderRound('t7', document.getElementById('t7Wrap'), document.getElementById('t7Table'), 140);
+    renderRound('t8', document.getElementById('t8Wrap'), document.getElementById('t8Table'), 140);
+    renderLongH('mainTable', document.getElementById('mainTableBox'));
+    renderLongH('study', document.getElementById('studyBox'));
+    renderLongH('t9', document.getElementById('t9Box'));
+    updateStat();
+  }
+
+  function updateStat() {
+    var count = 0;
+    Object.keys(tables).forEach(function(k){
+      tables[k].seats.forEach(function(s){ if (s.name.trim()) count++; });
+    });
+    document.getElementById('seatedCount').textContent = count;
+  }
+
+  document.getElementById('mainCapSelect').onchange = function(){
+    mainCap = parseInt(this.value);
+    resizeSeats('mainTable', mainCap);
+    render(); scheduleSave();
+  };
+  document.getElementById('t9CapSelect').onchange = function(){
+    t9Cap = parseInt(this.value);
+    resizeSeats('t9', t9Cap);
+    render(); scheduleSave();
+  };
+
+  // ── 載入既有資料 ──────────────────────
+  function updateOrderInfo() {
+    var el = document.getElementById('orderInfo');
+    if (!el) return;
+    var g = ORDER.groomName, b = ORDER.brideName, d = ORDER.weddingDate, s = ORDER.mealSession;
+    if (!g && !b && !d) { el.textContent = '（尚未帶入訂單資訊，請確認連結是否正確）'; el.style.color = '#c0392b'; return; }
+    el.textContent = (g||'—') + ' & ' + (b||'—') + '　｜　' + (d||'—') + '　' + (s||'');
+  }
+
+  function loadData() {
+    if (!TOKEN) { updateOrderInfo(); seed(); applyLayoutVariant(layoutVariant); render(); return; }
+    setStatus('saving', '載入中…');
+    fetch(BASE_URL + '?token=' + encodeURIComponent(TOKEN) + '&action=getSeatData')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        ORDER = (data && data.order) || {};
+        FORM = (data && data.form) || {};
+        updateOrderInfo();
+        layoutVariant = (ORDER.venueLayoutVariant === '整套音響') ? 'plan' : 'venue';
+        var seat = data && data.seat;
+        if (seat && seat.tables) {
+          mainCap = seat.mainCap || 18;
+          t9Cap = seat.t9Cap || 10;
+          seed();
+          Object.keys(seat.tables).forEach(function(k){
+            if (tables[k]) {
+              var savedT = seat.tables[k];
+              tables[k].label = savedT.label || tables[k].label;
+              tables[k].customLabel = !!savedT.customLabel;
+              if (savedT.seats && savedT.seats.length) tables[k].seats = savedT.seats;
+            }
+          });
+        } else {
+          if (FORM.paxAdultSeat) { /* 無現成人數對應規則，維持預設容量 */ }
+          seed();
+        }
+        document.getElementById('mainCapSelect').value = String(mainCap);
+        document.getElementById('t9CapSelect').value = String(t9Cap);
+        applyLayoutVariant(layoutVariant);
+        render();
+        setStatus('saved', '已載入');
+      })
+      .catch(function(e){
+        setStatus('error', '載入失敗，使用空白座位表');
+        seed(); render();
+      });
+  }
+
+  loadData();
+});
+</script>
+</body>
+</html>
