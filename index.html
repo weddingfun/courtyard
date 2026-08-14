@@ -30,7 +30,7 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 
 .venue-wrap-outer { max-width:1450px; margin:0 auto; overflow-x:auto; display:flex; justify-content:center; }
 .venue-wrap { width:760px; flex-shrink:0; background:#fff; border-radius:10px; padding:14px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
-.floor-plan { position:relative; width:750px; height:1200px; margin:0 auto; background:#FCFBF8; border:1.5px solid #ddd; border-radius:6px; overflow:visible; }
+.floor-plan { position:relative; width:820px; height:2160px; margin:0 auto; background:#FCFBF8; border:1.5px solid #ddd; border-radius:6px; overflow:visible; }
 
 .zone-label { position:absolute; font-size:10px; color:#999; letter-spacing:2px; text-align:center; }
 .door-bar { position:absolute; background:#1a1a1a; color:#fff; font-size:10px; text-align:center; padding:5px 0; border-radius:4px; letter-spacing:3px; }
@@ -78,6 +78,7 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
   .venue-wrap { box-shadow:none; }
   @page { size:A4 portrait; margin:6mm; }
   .venue-wrap-outer { max-width:none; overflow:visible; }
+  .round-wrap, .sq-wrap, .long-h { page-break-inside:avoid; break-inside:avoid; }
 }
 @media (max-width:800px) {
   .venue-wrap { overflow-x:auto; }
@@ -117,61 +118,61 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
   <div class="floor-plan" id="floorPlan">
 
     <div class="door-bar" style="left:475px; top:10px; width:130px;">大門口（舞台區）</div>
-    <div class="corridor" style="left:530px; top:45px; width:30px; height:955px;"></div>
-    <div class="corridor-arrow" style="left:530px; top:965px;">↓</div>
+    <div class="corridor" style="left:530px; top:45px; width:30px; height:1885px;"></div>
+    <div class="corridor-arrow" style="left:530px; top:1895px;">↓</div>
 
     <!-- 左側：主桌 / 雅座 / 音控台 / 吧台 -->
     <div class="long-h" id="mainTableBox" style="left:20px; top:70px; width:400px; height:70px;">
       <div class="table-bar-h" onclick="renameTable('mainTable')">主桌</div>
     </div>
 
-    <div class="sound-box" style="left:340px; top:190px; width:80px; height:80px;">音控台</div>
-    <div class="round-wrap" id="yz1Wrap" style="left:60px; top:190px; width:100px; height:100px;">
+    <div class="sound-box" style="left:340px; top:210px; width:80px; height:80px;">音控台</div>
+    <div class="round-wrap" id="yz1Wrap" style="left:60px; top:200px; width:110px; height:110px;">
       <div class="round-table" id="yz1Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('yz1')">雅座一</div></div>
     </div>
-    <div class="round-wrap" id="yz2Wrap" style="left:190px; top:190px; width:100px; height:100px;">
+    <div class="round-wrap" id="yz2Wrap" style="left:200px; top:200px; width:110px; height:110px;">
       <div class="round-table" id="yz2Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('yz2')">雅座二</div></div>
     </div>
 
-    <div class="bar-box" style="left:60px; top:320px; width:360px; height:680px;">吧　　台　　區</div>
+    <div class="bar-box" style="left:60px; top:350px; width:360px; height:1500px;">吧　　台　　區</div>
 
     <!-- 化妝室走道：在吧台區與書房/九桌之間，往左手邊走 -->
-    <div class="corridor-h" style="left:20px; top:1000px; width:570px; height:60px;"></div>
-    <div class="restroom-note" style="left:30px; top:1015px; width:60px;">🚻</div>
-    <div class="restroom-note" style="left:100px; top:1020px; width:220px; text-align:left;">← 往化妝室 / 洗手間</div>
+    <div class="corridor-h" style="left:20px; top:1930px; width:570px; height:60px;"></div>
+    <div class="restroom-note" style="left:30px; top:1945px; width:60px;">🚻</div>
+    <div class="restroom-note" style="left:100px; top:1950px; width:220px; text-align:left;">← 往化妝室 / 洗手間</div>
 
     <!-- 書房 + 九桌：同一列並排 -->
-    <div class="long-h" id="studyBox" style="left:20px; top:1090px; width:230px; height:70px;">
+    <div class="long-h" id="studyBox" style="left:20px; top:2020px; width:230px; height:70px;">
       <div class="table-bar-h" onclick="renameTable('study')">書房　<span class="warn-tag">(看不到舞台)</span></div>
     </div>
-    <div class="long-h" id="t9Box" style="left:270px; top:1090px; width:460px; height:70px;">
+    <div class="long-h" id="t9Box" style="left:270px; top:2020px; width:460px; height:70px;">
       <div class="table-bar-h" onclick="renameTable('t9')">九桌</div>
     </div>
 
-    <!-- 右側：一～八桌，單一直列，垂直範圍對齊左側（主桌～吧台底部，不超過化妝室走道） -->
-    <div class="round-wrap" id="t1Wrap" style="left:590px; top:60px; width:130px; height:130px;">
-      <div class="round-table" id="t1Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t1')">一桌</div></div>
+    <!-- 右側：一～八桌，單一直列，桌位間距加大避免座位重疊（每桌間隔50px） -->
+    <div class="round-wrap" id="t1Wrap" style="left:590px; top:60px; width:200px; height:200px;">
+      <div class="round-table" id="t1Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t1')">一桌</div></div>
     </div>
-    <div class="round-wrap" id="t2Wrap" style="left:590px; top:200px; width:130px; height:130px;">
-      <div class="round-table" id="t2Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t2')">二桌</div></div>
+    <div class="round-wrap" id="t2Wrap" style="left:590px; top:310px; width:200px; height:200px;">
+      <div class="round-table" id="t2Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t2')">二桌</div></div>
     </div>
-    <div class="sq-wrap" id="t3Wrap" style="left:590px; top:340px; width:120px; height:110px;">
+    <div class="sq-wrap" id="t3Wrap" style="left:590px; top:560px; width:170px; height:170px;">
       <div class="sq-table" id="t3Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t3')">三桌</div></div>
     </div>
-    <div class="sq-wrap" id="t4Wrap" style="left:590px; top:460px; width:120px; height:110px;">
+    <div class="sq-wrap" id="t4Wrap" style="left:590px; top:780px; width:170px; height:170px;">
       <div class="sq-table" id="t4Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t4')">四桌</div></div>
     </div>
-    <div class="sq-wrap" id="t5Wrap" style="left:590px; top:580px; width:120px; height:110px;">
+    <div class="sq-wrap" id="t5Wrap" style="left:590px; top:1000px; width:170px; height:170px;">
       <div class="sq-table" id="t5Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t5')">五桌</div></div>
     </div>
-    <div class="sq-wrap" id="t6Wrap" style="left:590px; top:700px; width:120px; height:110px;">
+    <div class="sq-wrap" id="t6Wrap" style="left:590px; top:1220px; width:170px; height:170px;">
       <div class="sq-table" id="t6Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t6')">六桌</div></div>
     </div>
-    <div class="round-wrap" id="t7Wrap" style="left:590px; top:820px; width:130px; height:130px;">
-      <div class="round-table" id="t7Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t7')">七桌</div></div>
+    <div class="round-wrap" id="t7Wrap" style="left:590px; top:1440px; width:200px; height:200px;">
+      <div class="round-table" id="t7Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t7')">七桌</div></div>
     </div>
-    <div class="round-wrap" id="t8Wrap" style="left:590px; top:960px; width:130px; height:130px;">
-      <div class="round-table" id="t8Table" style="width:68px;height:68px;"><div class="table-mid" onclick="renameTable('t8')">八桌</div></div>
+    <div class="round-wrap" id="t8Wrap" style="left:590px; top:1690px; width:200px; height:200px;">
+      <div class="round-table" id="t8Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t8')">八桌</div></div>
     </div>
 
   </div>
@@ -432,14 +433,14 @@ document.addEventListener('DOMContentLoaded', function () {
   function render() {
     renderRound('yz1', document.getElementById('yz1Wrap'), document.getElementById('yz1Table'), 110);
     renderRound('yz2', document.getElementById('yz2Wrap'), document.getElementById('yz2Table'), 110);
-    renderRound('t1', document.getElementById('t1Wrap'), document.getElementById('t1Table'), 140);
-    renderRound('t2', document.getElementById('t2Wrap'), document.getElementById('t2Table'), 140);
-    renderRound('t3', document.getElementById('t3Wrap'), document.getElementById('t3Table'), 120);
-    renderRound('t4', document.getElementById('t4Wrap'), document.getElementById('t4Table'), 120);
-    renderRound('t5', document.getElementById('t5Wrap'), document.getElementById('t5Table'), 120);
-    renderRound('t6', document.getElementById('t6Wrap'), document.getElementById('t6Table'), 120);
-    renderRound('t7', document.getElementById('t7Wrap'), document.getElementById('t7Table'), 140);
-    renderRound('t8', document.getElementById('t8Wrap'), document.getElementById('t8Table'), 140);
+    renderRound('t1', document.getElementById('t1Wrap'), document.getElementById('t1Table'), 200);
+    renderRound('t2', document.getElementById('t2Wrap'), document.getElementById('t2Table'), 200);
+    renderRound('t3', document.getElementById('t3Wrap'), document.getElementById('t3Table'), 170);
+    renderRound('t4', document.getElementById('t4Wrap'), document.getElementById('t4Table'), 170);
+    renderRound('t5', document.getElementById('t5Wrap'), document.getElementById('t5Table'), 170);
+    renderRound('t6', document.getElementById('t6Wrap'), document.getElementById('t6Table'), 170);
+    renderRound('t7', document.getElementById('t7Wrap'), document.getElementById('t7Table'), 200);
+    renderRound('t8', document.getElementById('t8Wrap'), document.getElementById('t8Table'), 200);
     renderLongH('mainTable', document.getElementById('mainTableBox'));
     renderLongH('study', document.getElementById('studyBox'));
     renderLongH('t9', document.getElementById('t9Box'));
