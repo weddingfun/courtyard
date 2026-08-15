@@ -30,7 +30,7 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 
 .venue-wrap-outer { max-width:1450px; margin:0 auto; overflow-x:auto; display:flex; justify-content:center; }
 .venue-wrap { width:760px; flex-shrink:0; background:#fff; border-radius:10px; padding:14px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
-.floor-plan { position:relative; width:820px; height:2160px; margin:0 auto; background:#FCFBF8; border:1.5px solid #ddd; border-radius:6px; overflow:visible; }
+.floor-plan { position:relative; width:680px; height:1500px; margin:0 auto; background:#FCFBF8; border:1.5px solid #ddd; border-radius:6px; overflow:visible; }
 
 .zone-label { position:absolute; font-size:10px; color:#999; letter-spacing:2px; text-align:center; }
 .door-bar { position:absolute; background:#1a1a1a; color:#fff; font-size:10px; text-align:center; padding:5px 0; border-radius:4px; letter-spacing:3px; }
@@ -46,13 +46,13 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 .round-wrap { position:absolute; }
 .round-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; border:1.5px solid #888; background:#FAFAFA; display:flex; align-items:center; justify-content:center; }
 .round-table .table-mid { font-size:10px; font-weight:700; color:#666; cursor:pointer; white-space:nowrap; background:#fff; padding:2px 5px; border-radius:8px; border:1px solid #ccc; }
-.round-wrap .r-seat { position:absolute; width:70px; transform:translate(-50%,-50%); }
+.round-wrap .r-seat { position:absolute; width:48px; transform:translate(-50%,-50%); }
 
 /* 方桌（4位） */
 .sq-wrap { position:absolute; }
 .sq-table { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border:1.5px solid #B8944A; background:#FBF5E6; border-radius:6px; display:flex; align-items:center; justify-content:center; }
 .sq-table .table-mid { font-size:10px; font-weight:700; color:#8a6a20; cursor:pointer; white-space:nowrap; background:#fff; padding:2px 5px; border-radius:8px; border:1px solid #d8b878; }
-.sq-wrap .r-seat { position:absolute; width:66px; transform:translate(-50%,-50%); }
+.sq-wrap .r-seat { position:absolute; width:44px; transform:translate(-50%,-50%); }
 
 /* 長桌（水平方向，座位分上下兩排） */
 .long-h { position:absolute; border:1.5px solid #5A8A52; border-radius:8px; background:#F2FAF0; }
@@ -71,27 +71,8 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 .seat.kid { background:#CFE3F5; color:#1a4a7a; }
 .seat.veg.kid { background:linear-gradient(135deg,#D4EDCC 50%,#CFE3F5 50%); color:#1a1a1a; }
 .dish-select { font-size:11px; padding:2px 1px; border:1px solid #ddd; border-radius:3px; width:100%; background:#fff; }
+.pf-text { display:none; }
 
-@media print {
-  body { background:#fff; padding:0; }
-  .toolbar, .save-status { display:none !important; }
-  .venue-wrap-outer, .venue-wrap-outer * { display:none !important; }
-  @page { size:A4 landscape; margin:6mm; }
-  .print-summary { display:block !important; }
-}
-.print-summary { display:none; }
-@media print {
-  .print-summary { column-count:5; column-gap:8px; font-size:8px; }
-  .psum-card { break-inside:avoid; -webkit-column-break-inside:avoid; margin-bottom:6px; border:1px solid #bbb; border-radius:3px; padding:3px 4px; }
-  .psum-title { font-weight:700; font-size:9px; border-bottom:1px solid #999; margin-bottom:2px; padding-bottom:1px; }
-  .psum-title .warn-tag { font-size:7px; }
-  .psum-card table { width:100%; border-collapse:collapse; }
-  .psum-card td { padding:0.5px 2px; font-size:7px; line-height:1.3; border-bottom:1px dotted #eee; vertical-align:top; }
-  .psum-card td.psum-seatno { width:14px; color:#999; }
-  .psum-card td.psum-name { max-width:40px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .psum-card td.psum-tags { width:20px; text-align:right; }
-  .psum-title-page { column-span:all; text-align:center; font-size:12px; font-weight:700; margin-bottom:6px; }
-}
 @media (max-width:800px) {
   .venue-wrap { overflow-x:auto; }
 }
@@ -114,7 +95,7 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
       <option value="10">10人</option><option value="12">12人</option>
     </select>
   </div>
-  <button class="btn ghost" onclick="window.print()">🖨️ 列印</button>
+  <button class="btn ghost" onclick="openPrintWindow()">🖨️ 列印</button>
 </div>
 
 <div class="stat">已安排 <b id="seatedCount">0</b> 人</div>
@@ -129,70 +110,66 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 <div class="venue-wrap-outer"><div class="venue-wrap">
   <div class="floor-plan" id="floorPlan">
 
-    <div class="door-bar" style="left:475px; top:10px; width:130px;">大門口（舞台區）</div>
-    <div class="corridor" style="left:530px; top:45px; width:30px; height:1885px;"></div>
-    <div class="corridor-arrow" style="left:530px; top:1895px;">↓</div>
+    <div class="door-bar" style="left:400px; top:10px; width:130px;">大門口（舞台區）</div>
+    <div class="corridor" style="left:455px; top:45px; width:30px; height:1294px;"></div>
+    <div class="corridor-arrow" style="left:455px; top:1304px;">↓</div>
 
     <!-- 左側：主桌 / 雅座 / 音控台 / 吧台 -->
-    <div class="long-h" id="mainTableBox" style="left:20px; top:70px; width:400px; height:70px;">
+    <div class="long-h" id="mainTableBox" style="left:20px; top:70px; width:360px; height:64px;">
       <div class="table-bar-h" onclick="renameTable('mainTable')">主桌</div>
     </div>
 
-    <div class="sound-box" style="left:340px; top:210px; width:80px; height:80px;">音控台</div>
-    <div class="round-wrap" id="yz1Wrap" style="left:60px; top:200px; width:110px; height:110px;">
-      <div class="round-table" id="yz1Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('yz1')">雅座一</div></div>
+    <div class="sound-box" style="left:330px; top:180px; width:70px; height:70px;">音控台</div>
+    <div class="round-wrap" id="yz1Wrap" style="left:190px; top:185px; width:110px; height:60px;">
+      <div class="round-table" id="yz1Table" style="width:50px;height:50px;"><div class="table-mid" onclick="renameTable('yz1')">雅座一</div></div>
     </div>
-    <div class="round-wrap" id="yz2Wrap" style="left:200px; top:200px; width:110px; height:110px;">
-      <div class="round-table" id="yz2Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('yz2')">雅座二</div></div>
+    <div class="round-wrap" id="yz2Wrap" style="left:30px; top:185px; width:110px; height:60px;">
+      <div class="round-table" id="yz2Table" style="width:50px;height:50px;"><div class="table-mid" onclick="renameTable('yz2')">雅座二</div></div>
     </div>
 
-    <div class="bar-box" style="left:60px; top:350px; width:360px; height:1500px;">吧　　台　　區</div>
+    <div class="bar-box" style="left:50px; top:280px; width:320px; height:1039px;">吧　　台　　區</div>
 
-    <!-- 化妝室走道：在吧台區與書房/九桌之間，往左手邊走 -->
-    <div class="corridor-h" style="left:20px; top:1930px; width:570px; height:60px;"></div>
-    <div class="restroom-note" style="left:30px; top:1945px; width:60px;">🚻</div>
-    <div class="restroom-note" style="left:100px; top:1950px; width:220px; text-align:left;">← 往化妝室 / 洗手間</div>
+    <!-- 化妝室走道：緊接在八桌旁邊，不再跟右側桌區有大段空白 -->
+    <div class="corridor-h" style="left:20px; top:1339px; width:500px; height:55px;"></div>
+    <div class="restroom-note" style="left:30px; top:1352px; width:60px;">🚻</div>
+    <div class="restroom-note" style="left:100px; top:1357px; width:220px; text-align:left;">← 往化妝室 / 洗手間</div>
 
     <!-- 書房 + 九桌：同一列並排 -->
-    <div class="long-h" id="studyBox" style="left:20px; top:2020px; width:230px; height:70px;">
+    <div class="long-h" id="studyBox" style="left:20px; top:1424px; width:200px; height:64px;">
       <div class="table-bar-h" onclick="renameTable('study')">書房　<span class="warn-tag">(看不到舞台)</span></div>
     </div>
-    <div class="long-h" id="t9Box" style="left:270px; top:2020px; width:460px; height:70px;">
+    <div class="long-h" id="t9Box" style="left:240px; top:1424px; width:400px; height:64px;">
       <div class="table-bar-h" onclick="renameTable('t9')">九桌</div>
     </div>
 
-    <!-- 右側：一～八桌，單一直列，桌位間距加大避免座位重疊（每桌間隔50px） -->
-    <div class="round-wrap" id="t1Wrap" style="left:590px; top:60px; width:200px; height:200px;">
-      <div class="round-table" id="t1Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t1')">一桌</div></div>
+    <!-- 右側：一～八桌，單一直列。桌位本身尺寸不變（座位貼近桌子），但桌與桌之間留45px淨空，蓋掉座位框上下溢出範圍避免相鄰兩桌疊字 -->
+    <div class="round-wrap" id="t1Wrap" style="left:515px; top:60px; width:124px; height:124px;">
+      <div class="round-table" id="t1Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t1')">一桌</div></div>
     </div>
-    <div class="round-wrap" id="t2Wrap" style="left:590px; top:310px; width:200px; height:200px;">
-      <div class="round-table" id="t2Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t2')">二桌</div></div>
+    <div class="round-wrap" id="t2Wrap" style="left:515px; top:229px; width:124px; height:124px;">
+      <div class="round-table" id="t2Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t2')">二桌</div></div>
     </div>
-    <div class="sq-wrap" id="t3Wrap" style="left:590px; top:560px; width:170px; height:170px;">
-      <div class="sq-table" id="t3Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t3')">三桌</div></div>
+    <div class="sq-wrap" id="t3Wrap" style="left:515px; top:398px; width:112px; height:112px;">
+      <div class="sq-table" id="t3Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t3')">三桌</div></div>
     </div>
-    <div class="sq-wrap" id="t4Wrap" style="left:590px; top:780px; width:170px; height:170px;">
-      <div class="sq-table" id="t4Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t4')">四桌</div></div>
+    <div class="sq-wrap" id="t4Wrap" style="left:515px; top:555px; width:112px; height:112px;">
+      <div class="sq-table" id="t4Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t4')">四桌</div></div>
     </div>
-    <div class="sq-wrap" id="t5Wrap" style="left:590px; top:1000px; width:170px; height:170px;">
-      <div class="sq-table" id="t5Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t5')">五桌</div></div>
+    <div class="sq-wrap" id="t5Wrap" style="left:515px; top:712px; width:112px; height:112px;">
+      <div class="sq-table" id="t5Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t5')">五桌</div></div>
     </div>
-    <div class="sq-wrap" id="t6Wrap" style="left:590px; top:1220px; width:170px; height:170px;">
-      <div class="sq-table" id="t6Table" style="width:64px;height:56px;"><div class="table-mid" onclick="renameTable('t6')">六桌</div></div>
+    <div class="sq-wrap" id="t6Wrap" style="left:515px; top:869px; width:112px; height:112px;">
+      <div class="sq-table" id="t6Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t6')">六桌</div></div>
     </div>
-    <div class="round-wrap" id="t7Wrap" style="left:590px; top:1440px; width:200px; height:200px;">
-      <div class="round-table" id="t7Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t7')">七桌</div></div>
+    <div class="round-wrap" id="t7Wrap" style="left:515px; top:1026px; width:124px; height:124px;">
+      <div class="round-table" id="t7Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t7')">七桌</div></div>
     </div>
-    <div class="round-wrap" id="t8Wrap" style="left:590px; top:1690px; width:200px; height:200px;">
-      <div class="round-table" id="t8Table" style="width:70px;height:70px;"><div class="table-mid" onclick="renameTable('t8')">八桌</div></div>
+    <div class="round-wrap" id="t8Wrap" style="left:515px; top:1195px; width:124px; height:124px;">
+      <div class="round-table" id="t8Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t8')">八桌</div></div>
     </div>
 
   </div>
 </div></div>
-
-<div class="print-summary" id="printSummary">
-  <div class="psum-title-page" id="printSummaryTitle">婚宴座位表 — 大院子</div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -245,6 +222,31 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   var VEG_OPTS = ['素-彩椒盅','素-茄子盅','素-南瓜盅'];
 
+  // 座位格空間很小，列印用簡稱（下拉選單本身仍用完整菜名，這裡只影響列印顯示）
+  var NEW_MENU_SHORT = {
+    A: ['牛','豬','魚'], B: ['牛','雞','豬'], C: ['牛','豬','龍蝦'], D: ['龍蝦','牛'],
+  };
+  var OLD_MENU_SHORT = {
+    A: ['牛','鴨','魚'], B: ['雞','牛','豬'], C: ['牛','豬','龍蝦'], D: ['龍蝦牛'],
+  };
+  var VEG_OPTS_SHORT = ['素-彩椒','素-茄子','素-南瓜'];
+
+  function dishShortLabel(dishVal) {
+    if (!dishVal) return '';
+    var version = (ORDER.menuPackage === '舊') ? 'old' : 'new';
+    var tier = (FORM.menuTier) || '';
+    if (dishVal.indexOf('main') === 0) {
+      var idx = parseInt(dishVal.replace('main',''), 10);
+      var shorts = tier ? (version === 'old' ? OLD_MENU_SHORT : NEW_MENU_SHORT)[tier] : null;
+      return (shorts && shorts[idx]) || dishLabel(dishVal);
+    }
+    if (dishVal.indexOf('veg') === 0) {
+      var vidx = parseInt(dishVal.replace('veg',''), 10);
+      return VEG_OPTS_SHORT[vidx] || dishLabel(dishVal);
+    }
+    return dishLabel(dishVal);
+  }
+
   function dishOptions() {
     var version = (ORDER.menuPackage === '舊') ? 'old' : 'new';
     var tier = (FORM.menuTier) || '';
@@ -266,8 +268,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var tables = {}; // { mainTable:{label,seats:[]}, yz1:{...}, ... }
 
   var LAYOUT_POS = {
-    venue: { yz1: 200, yz2: 60, sound: 340 },
-    plan:  { sound: 60, yz2: 200, yz1: 340 },
+    venue: { yz2: 30, yz1: 190, sound: 330 },
+    plan:  { sound: 30, yz2: 130, yz1: 290 },
   };
   function applyLayoutVariant(v) {
     layoutVariant = v;
@@ -370,6 +372,12 @@ document.addEventListener('DOMContentLoaded', function () {
     return wrap;
   }
 
+  function dishLabel(dishVal) {
+    if (!dishVal) return '';
+    var opt = dishOptions().filter(function(o){ return o.v === dishVal; })[0];
+    return opt ? opt.l : '';
+  }
+
   function refreshSeat(inp, s) {
     inp.value = s.name; inp.className = seatClass(s);
     updateStat(); scheduleSave();
@@ -401,22 +409,23 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── 桌型渲染 ──────────────────────
-  function positionsRound(n, wrapSize, tableSize) {
-    // 從正上方(12點鐘)開始順時針均分
-    var r = wrapSize/2 - 6;
-    var cx = wrapSize/2, cy = wrapSize/2;
+  function positionsRound(n, w, h, startAngle) {
+    // 支援非正方形容器（如雅座改左右坐用寬扁盒子）：水平/垂直各自算半徑，橢圓分佈
+    var rx = w/2 - 6, ry = h/2 - 6;
+    var cx = w/2, cy = h/2;
+    var base = (startAngle === undefined) ? -90 : startAngle;
     var pos = [];
     for (var i=0;i<n;i++) {
-      var angle = (-90 + i * (360/n)) * Math.PI/180;
-      pos.push({ x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) });
+      var angle = (base + i * (360/n)) * Math.PI/180;
+      pos.push({ x: cx + rx*Math.cos(angle), y: cy + ry*Math.sin(angle) });
     }
     return pos;
   }
 
-  function renderRound(key, wrapEl, tableEl, wrapSize) {
+  function renderRound(key, wrapEl, tableEl, w, h, startAngle) {
     var t = tables[key];
     var n = t.seats.length;
-    var pos = positionsRound(n, wrapSize, 0);
+    var pos = positionsRound(n, w, h, startAngle);
     // 先清掉舊座位（保留 table 圓餅本身）
     Array.prototype.slice.call(wrapEl.querySelectorAll('.r-seat')).forEach(function(el){ el.remove(); });
     tableEl.querySelector('.table-mid').textContent = t.label;
@@ -447,16 +456,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function render() {
-    renderRound('yz1', document.getElementById('yz1Wrap'), document.getElementById('yz1Table'), 110);
-    renderRound('yz2', document.getElementById('yz2Wrap'), document.getElementById('yz2Table'), 110);
-    renderRound('t1', document.getElementById('t1Wrap'), document.getElementById('t1Table'), 200);
-    renderRound('t2', document.getElementById('t2Wrap'), document.getElementById('t2Table'), 200);
-    renderRound('t3', document.getElementById('t3Wrap'), document.getElementById('t3Table'), 170);
-    renderRound('t4', document.getElementById('t4Wrap'), document.getElementById('t4Table'), 170);
-    renderRound('t5', document.getElementById('t5Wrap'), document.getElementById('t5Table'), 170);
-    renderRound('t6', document.getElementById('t6Wrap'), document.getElementById('t6Table'), 170);
-    renderRound('t7', document.getElementById('t7Wrap'), document.getElementById('t7Table'), 200);
-    renderRound('t8', document.getElementById('t8Wrap'), document.getElementById('t8Table'), 200);
+    renderRound('yz1', document.getElementById('yz1Wrap'), document.getElementById('yz1Table'), 110, 60, 180);
+    renderRound('yz2', document.getElementById('yz2Wrap'), document.getElementById('yz2Table'), 110, 60, 180);
+    renderRound('t1', document.getElementById('t1Wrap'), document.getElementById('t1Table'), 124, 124);
+    renderRound('t2', document.getElementById('t2Wrap'), document.getElementById('t2Table'), 124, 124);
+    renderRound('t3', document.getElementById('t3Wrap'), document.getElementById('t3Table'), 112, 112);
+    renderRound('t4', document.getElementById('t4Wrap'), document.getElementById('t4Table'), 112, 112);
+    renderRound('t5', document.getElementById('t5Wrap'), document.getElementById('t5Table'), 112, 112);
+    renderRound('t6', document.getElementById('t6Wrap'), document.getElementById('t6Table'), 112, 112);
+    renderRound('t7', document.getElementById('t7Wrap'), document.getElementById('t7Table'), 124, 124);
+    renderRound('t8', document.getElementById('t8Wrap'), document.getElementById('t8Table'), 124, 124);
     renderLongH('mainTable', document.getElementById('mainTableBox'));
     renderLongH('study', document.getElementById('studyBox'));
     renderLongH('t9', document.getElementById('t9Box'));
@@ -469,32 +478,132 @@ document.addEventListener('DOMContentLoaded', function () {
       tables[k].seats.forEach(function(s){ if (s.name.trim()) count++; });
     });
     document.getElementById('seatedCount').textContent = count;
-    renderPrintSummary();
   }
 
-  // ── 列印用：純表格彙整版，取代空間版面圖，確保能印在一頁內、字看得清楚 ──
-  function renderPrintSummary() {
-    var el = document.getElementById('printSummary');
-    if (!el) return;
-    var dishMap = {};
-    dishOptions().forEach(function(o){ if (o.v) dishMap[o.v] = o.l; });
-    var g = ORDER.groomName, b = ORDER.brideName, d = ORDER.weddingDate, s = ORDER.mealSession;
-    document.getElementById('printSummaryTitle').textContent =
-      '婚宴座位表 — 大院子　' + (g||'') + (g||b?' & ':'') + (b||'') + (d?'　'+d:'') + (s?' '+s:'');
+  function seatCellClass(s) {
+    return (s.veg && s.kid) ? 'pf-vegkid' : s.veg ? 'pf-veg' : s.kid ? 'pf-kid' : '';
+  }
 
-    var html = '<div class="psum-title-page">婚宴座位表 — 大院子　' + (g||'') + (g||b?' & ':'') + (b||'') + (d?'　'+d:'') + (s?' '+s:'') + '</div>';
-    TABLE_DEFS.forEach(function(def){
-      var t = tables[def.key];
-      if (!t) return;
-      var rows = t.seats.map(function(sVal, i){
-        var tag = (sVal.veg && sVal.kid) ? '素/童' : sVal.veg ? '素' : sVal.kid ? '童' : '';
-        var dish = dishMap[sVal.dish] || '';
-        return '<tr><td class="psum-seatno">' + (i+1) + '</td><td class="psum-name">' + (sVal.name || '') + '</td><td>' + dish + '</td><td class="psum-tags">' + tag + '</td></tr>';
+  // 長桌（主桌/書房/九桌）：上排 餐點+名字、中間桌名合併紅底列、下排 名字+餐點 —— 對照原始正式版桌圖格式
+  function buildPfLongTable(key, extraLabel) {
+    var t = tables[key];
+    if (!t) return '';
+    var half = Math.ceil(t.seats.length / 2);
+    var top = t.seats.slice(0, half), bottom = t.seats.slice(half);
+    var cols = Math.max(top.length, bottom.length, 1);
+    function row(label, seats, field) {
+      var cells = seats.map(function(s){
+        var val = field === 'dish' ? dishShortLabel(s.dish) : (s.name || '');
+        return '<td class="' + seatCellClass(s) + '">' + val + '</td>';
       }).join('');
-      html += '<div class="psum-card"><div class="psum-title">' + t.label + (def.key==='study' ? ' <span class="warn-tag">(看不到舞台)</span>' : '') + '（' + t.seats.length + '人）</div><table>' + rows + '</table></div>';
-    });
-    el.innerHTML = html;
+      var pad = '';
+      for (var i = seats.length; i < cols; i++) pad += '<td></td>';
+      return '<tr><th>' + label + '</th>' + cells + pad + '</tr>';
+    }
+    return '<table class="pf-block">'
+      + row('餐點', top, 'dish')
+      + row('名字', top, 'name')
+      + '<tr><td class="pf-label-cell" colspan="' + (cols + 1) + '">' + t.label + '　' + t.seats.length + '人' + (extraLabel || '') + '</td></tr>'
+      + row('名字', bottom, 'name')
+      + row('餐點', bottom, 'dish')
+      + '</table>';
   }
+
+  // 圓桌：左半／右半各一組（餐點/名字兩欄），桌名合併在中間直排 —— 對照原始正式版桌圖格式
+  function buildPfRoundTable(key) {
+    var t = tables[key];
+    if (!t) return '';
+    var half = Math.ceil(t.seats.length / 2);
+    var left = t.seats.slice(0, half), right = t.seats.slice(half);
+    var rows = Math.max(left.length, right.length, 1);
+    var trs = '<tr><td class="pf-label-cell" colspan="4">' + t.label + '　' + t.seats.length + '人</td></tr>';
+    for (var i = 0; i < rows; i++) {
+      var ls = left[i], rs = right[i];
+      trs += '<tr>';
+      trs += ls ? '<td class="' + seatCellClass(ls) + '">' + dishShortLabel(ls.dish) + '</td><td class="' + seatCellClass(ls) + '">' + (ls.name||'') + '</td>' : '<td></td><td></td>';
+      trs += rs ? '<td class="' + seatCellClass(rs) + '">' + (rs.name||'') + '</td><td class="' + seatCellClass(rs) + '">' + dishShortLabel(rs.dish) + '</td>' : '<td></td><td></td>';
+      trs += '</tr>';
+    }
+    return '<table class="pf-block">' + trs + '</table>';
+  }
+
+  // 方桌（4人）：上2位／桌名／下2位 —— 對照原始正式版桌圖格式
+  function buildPfSquareTable(key) {
+    var t = tables[key];
+    if (!t) return '';
+    var half = Math.ceil(t.seats.length / 2);
+    var top = t.seats.slice(0, half), bottom = t.seats.slice(half);
+    var cols = Math.max(top.length, bottom.length, 1);
+    function row(label, seats, field) {
+      var cells = seats.map(function(s){
+        var val = field === 'dish' ? dishShortLabel(s.dish) : (s.name || '');
+        return '<td class="' + seatCellClass(s) + '">' + val + '</td>';
+      }).join('');
+      return '<tr><th>' + label + '</th>' + cells + '</tr>';
+    }
+    return '<table class="pf-block">'
+      + row('餐點', top, 'dish')
+      + row('名字', top, 'name')
+      + '<tr><td class="pf-label-cell" colspan="' + (cols + 1) + '">' + t.label + '　' + t.seats.length + '人</td></tr>'
+      + row('名字', bottom, 'name')
+      + row('餐點', bottom, 'dish')
+      + '</table>';
+  }
+
+  // ── 開獨立列印視窗：完全脫離主頁面的CSS/版面，不會受畫面版任何樣式干擾，所見即所印 ──
+  function openPrintWindow() {
+    var g = ORDER.groomName, b = ORDER.brideName, d = ORDER.weddingDate, s = ORDER.mealSession;
+    var title = '婚宴座位表 — 大院子　' + (g||'') + (g||b?' & ':'') + (b||'') + (d?'　'+d:'') + (s?' '+s:'');
+
+    // 複製目前畫面上的場圖（跟妳現在看到的排位一模一樣），把input/select換成純文字
+    // （直接改value不會反映在outerHTML序列化結果，所以逐一讀取.value/.selectedIndex取代成文字節點）
+    var clone = document.getElementById('floorPlan').cloneNode(true);
+    var liveInputs = document.getElementById('floorPlan').querySelectorAll('input.seat, input[class^="seat"]');
+    var cloneInputs = clone.querySelectorAll('input.seat, input[class^="seat"]');
+    cloneInputs.forEach(function(inp, i){
+      var live = liveInputs[i];
+      var div = document.createElement('div');
+      div.className = live.className;
+      div.textContent = live.value.trim() || live.placeholder;
+      inp.parentNode.replaceChild(div, inp);
+    });
+    var liveSelects = document.getElementById('floorPlan').querySelectorAll('select.dish-select');
+    var cloneSelects = clone.querySelectorAll('select.dish-select');
+    cloneSelects.forEach(function(sel, i){
+      var live = liveSelects[i];
+      var opt = live.options[live.selectedIndex];
+      var div = document.createElement('div');
+      div.className = 'dish-select-print';
+      div.textContent = (opt && opt.value) ? opt.textContent : '';
+      sel.parentNode.replaceChild(div, sel);
+    });
+    // 拿掉點擊改名用的 onclick（純文字版不需要，避免殘留無效屬性）
+    clone.querySelectorAll('[onclick]').forEach(function(el){ el.removeAttribute('onclick'); });
+
+    var baseCss = document.querySelector('style').textContent;
+
+    var doc = '<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>' + title + '</title><style>'
+      + baseCss
+      + '@page { size:A4 portrait; margin:6mm; }'
+      + 'body{padding:0;background:#fff;}'
+      + '.pf-print-title{text-align:center;font-size:18px;font-weight:700;margin-bottom:10px;}'
+      + '.pf-print-wrap{zoom:0.65;}'
+      + '.seat{border:1px solid transparent;}'
+      + '.dish-select-print{font-size:11px;padding:2px 1px;border:1px solid #ddd;border-radius:3px;width:100%;background:#fafafa;text-align:center;}'
+      + '</style></head><body>'
+      + '<div class="pf-print-wrap"><div class="pf-print-title">' + title + '</div>' + clone.outerHTML + '</div>'
+      + '</body></html>';
+
+    var win = window.open('', '_blank');
+    if (!win) { alert('瀏覽器阻擋了列印視窗彈出，請允許本頁的彈出視窗後再試一次。'); return; }
+    win.document.open();
+    win.document.write(doc);
+    win.document.close();
+    win.onload = function() { win.focus(); win.print(); };
+    // 保險：部分瀏覽器 onload 不會在 document.write 後觸發，延遲直接呼叫一次
+    setTimeout(function(){ try { win.focus(); win.print(); } catch(e){} }, 400);
+  }
+  window.openPrintWindow = openPrintWindow;
 
   document.getElementById('mainCapSelect').onchange = function(){
     mainCap = parseInt(this.value);
