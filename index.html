@@ -103,7 +103,7 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 <div class="legend">
   <div class="leg"><span class="leg-box" style="background:#D4EDCC"></span>素食</div>
   <div class="leg"><span class="leg-box" style="background:#CFE3F5"></span>兒童椅（右鍵標記）</div>
-  <div class="leg">兒童餐／共餐：從座位下方菜色選單選</div>
+  <div class="leg">兒童餐／兒童共餐（僅限兒童）：從座位下方菜色選單選</div>
   <div class="leg"><span class="leg-box" style="background:#EDEDED"></span>已填寫</div>
 </div>
 <div class="save-status" id="saveStatus"></div>
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function dishShortLabel(dishVal) {
     if (!dishVal) return '';
     if (dishVal === 'kidmeal') return '兒童餐';
-    if (dishVal === 'share') return '共餐';
+    if (dishVal === 'share') return '兒童共餐';
     var version = (ORDER.menuPackage === '舊') ? 'old' : 'new';
     var tier = (FORM.menuTier) || '';
     if (dishVal.indexOf('main') === 0) {
@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (mains) mains.forEach(function(m,i){ opts.push({v:'main'+i, l:m}); });
     VEG_OPTS.forEach(function(v,i){ opts.push({v:'veg'+i, l:v}); });
     opts.push({v:'kidmeal', l:'兒童餐'});
-    opts.push({v:'share', l:'共餐（不佔餐）'});
+    opts.push({v:'share', l:'兒童共餐（僅限兒童，不佔餐）'});
     return opts;
   }
 
@@ -508,13 +508,13 @@ document.addEventListener('DOMContentLoaded', function () {
       return '<span style="color:' + (bad ? '#c0392b' : '#2d8a3e') + '">' + label + ' <b>' + n + '</b>（確認單 ' + f + '）' + (bad ? ' ⚠️' : ' ✓') + '</span>';
     }
     var parts = [cmp('兒童餐', kidMeal, FORM.paxKidMeal), cmp('兒童椅', chair, FORM.kidsChair)];
-    if (share) parts.push('共餐 <b>' + share + '</b>');
+    if (share) parts.push('兒童共餐 <b>' + share + '</b>');
     if (noDish) parts.push('<span style="color:#c8860a">未選餐 <b>' + noDish + '</b></span>');
     var el = document.getElementById('kidCheck'); if (el) el.innerHTML = '｜ ' + parts.join('　');
   }
 
   // ── 列印：A4 橫式專用版面（獨立視窗，不受畫面版樣式干擾）──
-  var DISH_COLOR = { '牛':'#C0392B', '豬':'#7D3C98', '雞':'#D68910', '魚':'#2874A6', '鴨':'#A04000', '龍蝦':'#C2185B', '龍蝦牛':'#C2185B', '素':'#2E7D32', '兒童餐':'#1F5AA6', '共餐':'#6B6B6B', '未選':'#999999' };
+  var DISH_COLOR = { '牛':'#C0392B', '豬':'#7D3C98', '雞':'#D68910', '魚':'#2874A6', '鴨':'#A04000', '龍蝦':'#C2185B', '龍蝦牛':'#C2185B', '素':'#2E7D32', '兒童餐':'#1F5AA6', '兒童共餐':'#6B6B6B', '未選':'#999999' };
   function escH(v) {
     return String(v == null ? '' : v).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; });
   }
@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (d.indexOf('veg') === 0) return { tag: dishShortLabel(d).replace('素-', '素・'), cat: '素' };
     if (d.indexOf('main') === 0) { var l = dishShortLabel(d); return { tag: l, cat: l }; }
     if (d === 'kidmeal') return { tag: '兒童餐', cat: '兒童餐' };
-    if (d === 'share') return { tag: '共餐', cat: '共餐' };
+    if (d === 'share') return { tag: '兒童共餐', cat: '兒童共餐' };
     if (s.veg) return { tag: '素', cat: '素' };
     return { tag: '未選餐', cat: '未選' };
   }
@@ -599,18 +599,18 @@ document.addEventListener('DOMContentLoaded', function () {
       t.seats.forEach(function(st){
         if (!st.name.trim()) return;
         var c = seatMeal(st).cat;
-        if (['素','兒童餐','共餐','未選'].indexOf(c) < 0 && mainShorts.indexOf(c) < 0) mainShorts.push(c);
+        if (['素','兒童餐','兒童共餐','未選'].indexOf(c) < 0 && mainShorts.indexOf(c) < 0) mainShorts.push(c);
         r.n++; r[c] = (r[c] || 0) + 1;
         total.n++; total[c] = (total[c] || 0) + 1;
       });
       if (r.n) rowsData.push(r);
     });
     var cats = mainShorts.concat(['素', '兒童餐']);
-    if (total['共餐']) cats.push('共餐');
+    if (total['兒童共餐']) cats.push('兒童共餐');
     if (total['未選']) cats.push('未選');
     var chairCount = 0;
     Object.keys(tables).forEach(function(k){ tables[k].seats.forEach(function(st){ if (st.name.trim() && st.kid) chairCount++; }); });
-    var mealCount = total.n - (total['共餐'] || 0);
+    var mealCount = total.n - (total['兒童共餐'] || 0);
 
     var summary = cats.filter(function(c){ return total[c]; }).map(function(c){ return c + ' ' + total[c]; }).join('・');
     var th = '<tr><th class="l">餐點統計</th><th>人數</th>' + cats.map(function(c){
@@ -696,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<div class="yzrow">' + yzRow + '</div>' +
           '<div class="mid"><div>' +
             '<div class="legend">' + legend + '</div>' +
-            '<div class="legend2"><span><i class="sw" style="background:#DDF0D6;border-color:#7FB571"></i>素食</span><span><i class="sw" style="background:#DCE9F8;border-color:#7FA6D6"></i>坐兒童椅</span><span>共餐＝佔位不佔餐，不計入用餐人數</span></div>' +
+            '<div class="legend2"><span><i class="sw" style="background:#DDF0D6;border-color:#7FB571"></i>素食</span><span><i class="sw" style="background:#DCE9F8;border-color:#7FA6D6"></i>坐兒童椅</span><span>兒童共餐＝僅限兒童，佔位不佔餐，不計入用餐人數</span></div>' +
             '<table class="st">' + th + trs + '</table>' +
           '</div><div class="barzone">吧 台</div></div>' +
           '<div class="restroom">← 往洗手間／化妝室</div>' +
