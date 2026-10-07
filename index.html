@@ -29,8 +29,8 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 .save-status.error { color:#c0392b; }
 
 .venue-wrap-outer { max-width:1450px; margin:0 auto; overflow-x:auto; display:flex; justify-content:center; }
-.venue-wrap { width:760px; flex-shrink:0; background:#fff; border-radius:10px; padding:14px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
-.floor-plan { position:relative; width:680px; height:1500px; margin:0 auto; background:#FCFBF8; border:1.5px solid #ddd; border-radius:6px; overflow:visible; }
+.venue-wrap { width:980px; flex-shrink:0; background:#fff; border-radius:10px; padding:14px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+.floor-plan { position:relative; width:900px; height:1500px; margin:0 auto; background:#FCFBF8; border:1.5px solid #ddd; border-radius:6px; overflow:visible; }
 
 .zone-label { position:absolute; font-size:10px; color:#999; letter-spacing:2px; text-align:center; }
 .door-bar { position:absolute; background:#1a1a1a; color:#fff; font-size:10px; text-align:center; padding:5px 0; border-radius:4px; letter-spacing:3px; }
@@ -60,17 +60,17 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 .long-h .lh-row { position:absolute; left:0; width:100%; display:flex; justify-content:space-around; padding:0 4px; }
 .long-h .lh-row.top { top:-30px; }
 .long-h .lh-row.bottom { bottom:-30px; }
-.long-h .lh-seat { width:64px; }
+.long-h .lh-seat { width:64px; flex:1 1 0; min-width:0; margin:0 2px; }
 
 .seat-cell { display:flex; flex-direction:column; gap:2px; }
-.seat { font-size:9px; background:#F0F0F0; border-radius:3px; padding:2px 3px; cursor:text; white-space:nowrap; overflow:hidden; line-height:1.4; border:1px solid transparent; outline:none; width:100%; box-sizing:border-box; font-family:inherit; text-align:center; }
+.seat { font-size:11px; background:#F0F0F0; border-radius:3px; padding:2px 3px; cursor:text; white-space:nowrap; overflow:hidden; line-height:1.4; border:1px solid transparent; outline:none; width:100%; box-sizing:border-box; font-family:inherit; text-align:center; }
 .seat:hover { background:#E8E4DC; }
 .seat.empty-s { color:#bbb; }
 .seat.filled { background:#EDEDED; color:#1a1a1a; }
 .seat.veg { background:#D4EDCC; color:#2d6a21; }
 .seat.kid { background:#CFE3F5; color:#1a4a7a; }
 .seat.veg.kid { background:linear-gradient(135deg,#D4EDCC 50%,#CFE3F5 50%); color:#1a1a1a; }
-.dish-select { font-size:11px; padding:2px 1px; border:1px solid #ddd; border-radius:3px; width:100%; background:#fff; }
+.dish-select { font-size:11px; padding:3px 1px; border:1px solid #ddd; border-radius:3px; width:100%; background:#fff; }
 .pf-text { display:none; }
 
 @media (max-width:800px) {
@@ -98,11 +98,12 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
   <button class="btn ghost" onclick="openPrintWindow()">🖨️ 列印</button>
 </div>
 
-<div class="stat">已安排 <b id="seatedCount">0</b> 人</div>
+<div class="stat">已安排 <b id="seatedCount">0</b> 人　<span id="kidCheck"></span></div>
 
 <div class="legend">
   <div class="leg"><span class="leg-box" style="background:#D4EDCC"></span>素食</div>
-  <div class="leg"><span class="leg-box" style="background:#CFE3F5"></span>兒童椅</div>
+  <div class="leg"><span class="leg-box" style="background:#CFE3F5"></span>兒童椅（右鍵標記）</div>
+  <div class="leg">兒童餐／共餐：從座位下方菜色選單選</div>
   <div class="leg"><span class="leg-box" style="background:#EDEDED"></span>已填寫</div>
 </div>
 <div class="save-status" id="saveStatus"></div>
@@ -110,12 +111,12 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 <div class="venue-wrap-outer"><div class="venue-wrap">
   <div class="floor-plan" id="floorPlan">
 
-    <div class="door-bar" style="left:400px; top:10px; width:130px;">大門口（舞台區）</div>
-    <div class="corridor" style="left:455px; top:45px; width:30px; height:1294px;"></div>
-    <div class="corridor-arrow" style="left:455px; top:1304px;">↓</div>
+    <div class="door-bar" style="left:620px; top:10px; width:130px;">大門口（舞台區）</div>
+    <div class="corridor" style="left:675px; top:45px; width:30px; height:1294px;"></div>
+    <div class="corridor-arrow" style="left:675px; top:1304px;">↓</div>
 
     <!-- 左側：主桌 / 雅座 / 音控台 / 吧台 -->
-    <div class="long-h" id="mainTableBox" style="left:20px; top:70px; width:360px; height:64px;">
+    <div class="long-h" id="mainTableBox" style="left:20px; top:70px; width:600px; height:64px;">
       <div class="table-bar-h" onclick="renameTable('mainTable')">主桌</div>
     </div>
 
@@ -127,44 +128,44 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
       <div class="round-table" id="yz2Table" style="width:50px;height:50px;"><div class="table-mid" onclick="renameTable('yz2')">雅座二</div></div>
     </div>
 
-    <div class="bar-box" style="left:50px; top:280px; width:320px; height:1039px;">吧　　台　　區</div>
+    <div class="bar-box" style="left:50px; top:280px; width:540px; height:1039px;">吧　　台　　區</div>
 
     <!-- 化妝室走道：緊接在八桌旁邊，不再跟右側桌區有大段空白 -->
-    <div class="corridor-h" style="left:20px; top:1339px; width:500px; height:55px;"></div>
+    <div class="corridor-h" style="left:20px; top:1339px; width:720px; height:55px;"></div>
     <div class="restroom-note" style="left:30px; top:1352px; width:60px;">🚻</div>
     <div class="restroom-note" style="left:100px; top:1357px; width:220px; text-align:left;">← 往化妝室 / 洗手間</div>
 
     <!-- 書房 + 九桌：同一列並排 -->
-    <div class="long-h" id="studyBox" style="left:20px; top:1424px; width:200px; height:64px;">
+    <div class="long-h" id="studyBox" style="left:20px; top:1424px; width:270px; height:64px;">
       <div class="table-bar-h" onclick="renameTable('study')">書房　<span class="warn-tag">(看不到舞台)</span></div>
     </div>
-    <div class="long-h" id="t9Box" style="left:240px; top:1424px; width:400px; height:64px;">
+    <div class="long-h" id="t9Box" style="left:310px; top:1424px; width:570px; height:64px;">
       <div class="table-bar-h" onclick="renameTable('t9')">九桌</div>
     </div>
 
     <!-- 右側：一～八桌，單一直列。桌位本身尺寸不變（座位貼近桌子），但桌與桌之間留45px淨空，蓋掉座位框上下溢出範圍避免相鄰兩桌疊字 -->
-    <div class="round-wrap" id="t1Wrap" style="left:515px; top:60px; width:124px; height:124px;">
+    <div class="round-wrap" id="t1Wrap" style="left:735px; top:60px; width:124px; height:124px;">
       <div class="round-table" id="t1Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t1')">一桌</div></div>
     </div>
-    <div class="round-wrap" id="t2Wrap" style="left:515px; top:229px; width:124px; height:124px;">
+    <div class="round-wrap" id="t2Wrap" style="left:735px; top:229px; width:124px; height:124px;">
       <div class="round-table" id="t2Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t2')">二桌</div></div>
     </div>
-    <div class="sq-wrap" id="t3Wrap" style="left:515px; top:398px; width:112px; height:112px;">
+    <div class="sq-wrap" id="t3Wrap" style="left:735px; top:398px; width:112px; height:112px;">
       <div class="sq-table" id="t3Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t3')">三桌</div></div>
     </div>
-    <div class="sq-wrap" id="t4Wrap" style="left:515px; top:555px; width:112px; height:112px;">
+    <div class="sq-wrap" id="t4Wrap" style="left:735px; top:555px; width:112px; height:112px;">
       <div class="sq-table" id="t4Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t4')">四桌</div></div>
     </div>
-    <div class="sq-wrap" id="t5Wrap" style="left:515px; top:712px; width:112px; height:112px;">
+    <div class="sq-wrap" id="t5Wrap" style="left:735px; top:712px; width:112px; height:112px;">
       <div class="sq-table" id="t5Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t5')">五桌</div></div>
     </div>
-    <div class="sq-wrap" id="t6Wrap" style="left:515px; top:869px; width:112px; height:112px;">
+    <div class="sq-wrap" id="t6Wrap" style="left:735px; top:869px; width:112px; height:112px;">
       <div class="sq-table" id="t6Table" style="width:50px;height:44px;"><div class="table-mid" onclick="renameTable('t6')">六桌</div></div>
     </div>
-    <div class="round-wrap" id="t7Wrap" style="left:515px; top:1026px; width:124px; height:124px;">
+    <div class="round-wrap" id="t7Wrap" style="left:735px; top:1026px; width:124px; height:124px;">
       <div class="round-table" id="t7Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t7')">七桌</div></div>
     </div>
-    <div class="round-wrap" id="t8Wrap" style="left:515px; top:1195px; width:124px; height:124px;">
+    <div class="round-wrap" id="t8Wrap" style="left:735px; top:1195px; width:124px; height:124px;">
       <div class="round-table" id="t8Table" style="width:56px;height:56px;"><div class="table-mid" onclick="renameTable('t8')">八桌</div></div>
     </div>
 
@@ -239,6 +240,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function dishShortLabel(dishVal) {
     if (!dishVal) return '';
+    if (dishVal === 'kidmeal') return '兒童餐';
+    if (dishVal === 'share') return '共餐';
     var version = (ORDER.menuPackage === '舊') ? 'old' : 'new';
     var tier = (FORM.menuTier) || '';
     if (dishVal.indexOf('main') === 0) {
@@ -260,6 +263,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var opts = [{v:'',l:'菜色'}];
     if (mains) mains.forEach(function(m,i){ opts.push({v:'main'+i, l:m}); });
     VEG_OPTS.forEach(function(v,i){ opts.push({v:'veg'+i, l:v}); });
+    opts.push({v:'kidmeal', l:'兒童餐'});
+    opts.push({v:'share', l:'共餐（不佔餐）'});
     return opts;
   }
 
@@ -274,8 +279,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var tables = {}; // { mainTable:{label,seats:[]}, yz1:{...}, ... }
 
   var LAYOUT_POS = {
-    venue: { yz2: 30, yz1: 190, sound: 330 },
-    plan:  { sound: 30, yz2: 130, yz1: 290 },
+    venue: { yz2: 50, yz1: 270, sound: 500 },
+    plan:  { sound: 50, yz2: 200, yz1: 420 },
   };
   function applyLayoutVariant(v) {
     layoutVariant = v;
@@ -484,10 +489,32 @@ document.addEventListener('DOMContentLoaded', function () {
       tables[k].seats.forEach(function(s){ if (s.name.trim()) count++; });
     });
     document.getElementById('seatedCount').textContent = count;
+
+    // 兒童餐／兒童椅分開統計，並對照確認單填的數量
+    var kidMeal = 0, chair = 0, share = 0, noDish = 0;
+    Object.keys(tables).forEach(function(k){
+      tables[k].seats.forEach(function(s){
+        if (!s.name.trim()) return;
+        if (s.dish === 'kidmeal') kidMeal++;
+        if (s.dish === 'share') share++;
+        if (s.kid) chair++;
+        if (!s.dish) noDish++;
+      });
+    });
+    function cmp(label, n, formVal) {
+      var f = parseInt(formVal, 10);
+      if (isNaN(f)) return label + ' <b>' + n + '</b>';
+      var bad = f !== n;
+      return '<span style="color:' + (bad ? '#c0392b' : '#2d8a3e') + '">' + label + ' <b>' + n + '</b>（確認單 ' + f + '）' + (bad ? ' ⚠️' : ' ✓') + '</span>';
+    }
+    var parts = [cmp('兒童餐', kidMeal, FORM.paxKidMeal), cmp('兒童椅', chair, FORM.kidsChair)];
+    if (share) parts.push('共餐 <b>' + share + '</b>');
+    if (noDish) parts.push('<span style="color:#c8860a">未選餐 <b>' + noDish + '</b></span>');
+    var el = document.getElementById('kidCheck'); if (el) el.innerHTML = '｜ ' + parts.join('　');
   }
 
   // ── 列印：A4 橫式專用版面（獨立視窗，不受畫面版樣式干擾）──
-  var DISH_COLOR = { '牛':'#C0392B', '豬':'#7D3C98', '雞':'#D68910', '魚':'#2874A6', '鴨':'#A04000', '龍蝦':'#C2185B', '龍蝦牛':'#C2185B', '素':'#2E7D32', '兒童':'#1F5AA6' };
+  var DISH_COLOR = { '牛':'#C0392B', '豬':'#7D3C98', '雞':'#D68910', '魚':'#2874A6', '鴨':'#A04000', '龍蝦':'#C2185B', '龍蝦牛':'#C2185B', '素':'#2E7D32', '兒童餐':'#1F5AA6', '共餐':'#6B6B6B', '未選':'#999999' };
   function escH(v) {
     return String(v == null ? '' : v).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; });
   }
@@ -496,9 +523,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var d = s.dish || '';
     if (d.indexOf('veg') === 0) return { tag: dishShortLabel(d).replace('素-', '素・'), cat: '素' };
     if (d.indexOf('main') === 0) { var l = dishShortLabel(d); return { tag: l, cat: l }; }
+    if (d === 'kidmeal') return { tag: '兒童餐', cat: '兒童餐' };
+    if (d === 'share') return { tag: '共餐', cat: '共餐' };
     if (s.veg) return { tag: '素', cat: '素' };
-    if (s.kid) return { tag: '兒童', cat: '兒童' };
-    return { tag: '', cat: '未選' };
+    return { tag: '未選餐', cat: '未選' };
   }
   function tagColor(cat) { return DISH_COLOR[cat] || '#555'; }
   function seatBg(s) { return s.veg ? ' veg' : s.kid ? ' kid' : ''; }
@@ -571,14 +599,18 @@ document.addEventListener('DOMContentLoaded', function () {
       t.seats.forEach(function(st){
         if (!st.name.trim()) return;
         var c = seatMeal(st).cat;
-        if (c !== '素' && c !== '兒童' && c !== '未選' && mainShorts.indexOf(c) < 0) mainShorts.push(c);
+        if (['素','兒童餐','共餐','未選'].indexOf(c) < 0 && mainShorts.indexOf(c) < 0) mainShorts.push(c);
         r.n++; r[c] = (r[c] || 0) + 1;
         total.n++; total[c] = (total[c] || 0) + 1;
       });
       if (r.n) rowsData.push(r);
     });
-    var cats = mainShorts.concat(['素', '兒童']);
+    var cats = mainShorts.concat(['素', '兒童餐']);
+    if (total['共餐']) cats.push('共餐');
     if (total['未選']) cats.push('未選');
+    var chairCount = 0;
+    Object.keys(tables).forEach(function(k){ tables[k].seats.forEach(function(st){ if (st.name.trim() && st.kid) chairCount++; }); });
+    var mealCount = total.n - (total['共餐'] || 0);
 
     var summary = cats.filter(function(c){ return total[c]; }).map(function(c){ return c + ' ' + total[c]; }).join('・');
     var th = '<tr><th class="l">餐點統計</th><th>人數</th>' + cats.map(function(c){
@@ -656,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var body = '<div class="ps">' +
       '<div class="head"><div class="ttl">' + escH((d || '') + (s ? ' ' + s : '')) + '　大院子 座位表' +
         '<span class="cp">' + escH((g || '') + ' & ' + (b || '')) + '</span><span class="br">wedding fun 想樂</span></div>' +
-        '<div class="meta">賓客 <b>' + total.n + '</b> 人｜' + escH(summary) + '</div></div>' +
+        '<div class="meta">賓客 <b>' + total.n + '</b> 人（用餐 ' + mealCount + '）｜' + escH(summary) + '｜兒童椅 ' + chairCount + ' 張</div></div>' +
       '<div class="body">' +
         '<div class="left">' +
           '<div class="door">大門口（舞台區）</div>' +
@@ -664,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<div class="yzrow">' + yzRow + '</div>' +
           '<div class="mid"><div>' +
             '<div class="legend">' + legend + '</div>' +
-            '<div class="legend2"><span><i class="sw" style="background:#DDF0D6;border-color:#7FB571"></i>素食</span><span><i class="sw" style="background:#DCE9F8;border-color:#7FA6D6"></i>兒童椅（3歲以下兒童佔位不佔餐）</span></div>' +
+            '<div class="legend2"><span><i class="sw" style="background:#DDF0D6;border-color:#7FB571"></i>素食</span><span><i class="sw" style="background:#DCE9F8;border-color:#7FA6D6"></i>坐兒童椅</span><span>共餐＝佔位不佔餐，不計入用餐人數</span></div>' +
             '<table class="st">' + th + trs + '</table>' +
           '</div><div class="barzone">吧 台</div></div>' +
           '<div class="restroom">← 往洗手間／化妝室</div>' +
@@ -767,6 +799,14 @@ document.addEventListener('DOMContentLoaded', function () {
         lockEl.style.color = '#c0392b';
       });
   }
+
+  // 依螢幕寬度自動放大場圖（電腦上比較好點選；手機維持原尺寸可左右滑動）
+  function fitZoom() {
+    var z = Math.max(1, Math.min(1.4, (window.innerWidth - 24) / 1010));
+    document.querySelectorAll('.venue-wrap, h1, .sub, .toolbar, .stat, .legend, .save-status').forEach(function(el){ el.style.zoom = z; });
+  }
+  window.addEventListener('resize', fitZoom);
+  fitZoom();
 
   loadData();
 });
