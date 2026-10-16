@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- 檔案：seating_courtyard.html｜版本：2026-10-16 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -93,6 +94,11 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
   <div class="cap-select">九桌
     <select id="t9CapSelect">
       <option value="10">10人</option><option value="12">12人</option>
+    </select>
+  </div>
+  <div class="cap-select">一桌
+    <select id="t1TypeSelect">
+      <option value="round">圓桌 6人</option><option value="couple">雙人主桌（方桌）</option>
     </select>
   </div>
   <button class="btn ghost" onclick="openPrintWindow()">🖨️ 列印</button>
@@ -199,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function doSave() {
     if (!TOKEN || !LOADED) return;
     setStatus('saving', '儲存中…');
-    var payload = { mainCap: mainCap, t9Cap: t9Cap, tables: tables };
+    var payload = { mainCap: mainCap, t9Cap: t9Cap, t1Type: t1Type, tables: tables };
     var seatStr = JSON.stringify(payload);
     var getUrl = BASE_URL + '?action=saveSeatData&token=' + encodeURIComponent(TOKEN) + '&seat=' + encodeURIComponent(seatStr);
     if (getUrl.length <= 2000) {
@@ -273,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var FORM = {};
   var mainCap = 18;
   var t9Cap = 10;
+  var t1Type = 'round';   // 一桌桌型：round（圓桌6人）／couple（雙人主桌・方桌，只坐上側兩位）
   // 場圖版型由主控表 venueLayoutVariant 欄位決定（新人端不可見/不可改，避免造成困擾）
   // 欄位值：'整套音響' → plan（音控台/雅座二/雅座一）；'單顆音響'或其他（含空白）→ venue（雅座二/雅座一/音控台，預設）
   var layoutVariant = 'venue';
@@ -315,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function seed() {
     tables = {};
     TABLE_DEFS.forEach(function(def){
-      var n = def.key === 'mainTable' ? mainCap : (def.key === 't9' ? t9Cap : def.n);
+      var n = def.key === 'mainTable' ? mainCap : (def.key === 't9' ? t9Cap : (def.key === 't1' && t1Type === 'couple' ? 2 : def.n));
       tables[def.key] = { label: def.label, customLabel: false, seats: mkSeats(n) };
     });
   }
@@ -466,10 +473,31 @@ document.addEventListener('DOMContentLoaded', function () {
     boxEl.appendChild(botRow);
   }
 
+  // 一桌：圓桌 6 人，或改成雙人主桌（方桌，新人坐上側兩位）
+  function renderT1() {
+    var wrap = document.getElementById('t1Wrap'), tb = document.getElementById('t1Table');
+    if (t1Type !== 'couple') {
+      tb.className = 'round-table'; tb.style.width = '56px'; tb.style.height = '56px';
+      renderRound('t1', wrap, tb, 124, 124);
+      return;
+    }
+    tb.className = 'sq-table'; tb.style.width = '96px'; tb.style.height = '50px';
+    Array.prototype.slice.call(wrap.querySelectorAll('.r-seat')).forEach(function(el){ el.remove(); });
+    tb.querySelector('.table-mid').textContent = tables.t1.label;
+    var pos = [{ x: 38, y: 20 }, { x: 86, y: 20 }];
+    for (var i = 0; i < tables.t1.seats.length; i++) {
+      var cell = makeSeatCell('t1', i);
+      cell.classList.add('r-seat');
+      cell.style.width = '46px';
+      cell.style.left = pos[i].x + 'px'; cell.style.top = pos[i].y + 'px';
+      wrap.appendChild(cell);
+    }
+  }
+
   function render() {
     renderRound('yz1', document.getElementById('yz1Wrap'), document.getElementById('yz1Table'), 110, 60, 180);
     renderRound('yz2', document.getElementById('yz2Wrap'), document.getElementById('yz2Table'), 110, 60, 180);
-    renderRound('t1', document.getElementById('t1Wrap'), document.getElementById('t1Table'), 124, 124);
+    renderT1();
     renderRound('t2', document.getElementById('t2Wrap'), document.getElementById('t2Table'), 124, 124);
     renderRound('t3', document.getElementById('t3Wrap'), document.getElementById('t3Table'), 112, 112);
     renderRound('t4', document.getElementById('t4Wrap'), document.getElementById('t4Table'), 112, 112);
@@ -574,6 +602,12 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="g2">' + t.seats.slice(0, half).map(cellH).join('') + '</div>' +
       '<div class="bar">' + escH(t.label) + '<small>' + filled(t) + '人　方桌</small></div>' +
       '<div class="g2">' + t.seats.slice(half).map(cellH).join('') + '</div></div>';
+  }
+  function coupleCard(key) {
+    var t = tables[key];
+    return '<div class="card sq">' +
+      '<div class="g2">' + t.seats.slice(0, 2).map(cellH).join('') + '</div>' +
+      '<div class="bar">' + escH(t.label) + '<small>雙人主桌　' + filled(t) + '人</small></div></div>';
   }
   function smallCard(key) {
     var t = tables[key];
@@ -702,7 +736,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<div class="restroom">← 往洗手間／化妝室</div>' +
         '</div>' +
         '<div class="right">' +
-          roundCard('t1') + roundCard('t2') + squareCard('t3') + squareCard('t4') + squareCard('t5') + squareCard('t6') + roundCard('t7') + roundCard('t8') +
+          (t1Type === 'couple' ? coupleCard('t1') : roundCard('t1')) + roundCard('t2') + squareCard('t3') + squareCard('t4') + squareCard('t5') + squareCard('t6') + roundCard('t7') + roundCard('t8') +
         '</div>' +
       '</div>' +
       '<div class="bottom">' + studyHtml + longTable('t9') + '</div>' +
@@ -732,6 +766,17 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('mainCapSelect').onchange = function(){
     mainCap = parseInt(this.value);
     resizeSeats('mainTable', mainCap);
+    render(); scheduleSave();
+  };
+  document.getElementById('t1TypeSelect').onchange = function(){
+    var want = this.value;
+    if (want === t1Type) return;
+    if (want === 'couple') {
+      var extra = tables.t1.seats.slice(2).filter(function(s){ return s.name.trim(); });
+      if (extra.length && !confirm('一桌第 3–6 位已有 ' + extra.length + ' 位賓客，改成雙人主桌會移除這些座位，確定？')) { this.value = t1Type; return; }
+    }
+    t1Type = want;
+    resizeSeats('t1', want === 'couple' ? 2 : 6);
     render(); scheduleSave();
   };
   document.getElementById('t9CapSelect').onchange = function(){
@@ -773,6 +818,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (seat && seat.tables) {
           mainCap = seat.mainCap || 18;
           t9Cap = seat.t9Cap || 10;
+          t1Type = seat.t1Type === 'couple' ? 'couple' : 'round';
           seed();
           Object.keys(seat.tables).forEach(function(k){
             if (tables[k]) {
@@ -787,6 +833,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         document.getElementById('mainCapSelect').value = String(mainCap);
         document.getElementById('t9CapSelect').value = String(t9Cap);
+        document.getElementById('t1TypeSelect').value = t1Type;
         applyLayoutVariant(layoutVariant);
         render();
         setStatus('saved', '已載入');
