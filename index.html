@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 檔案：seating_courtyard.html｜版本：2026-10-16 -->
+<!-- 檔案：seating_courtyard.html｜版本：2026-10-16c -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -42,6 +42,8 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 .sound-box { position:absolute; background:#1a1a1a; color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; border-radius:4px; letter-spacing:1px; }
 .restroom-note { position:absolute; font-size:9px; color:#888; text-align:center; }
 .warn-tag { color:#c0392b; font-weight:700; }
+.speaker { position:absolute; display:flex; align-items:center; gap:4px; background:#FFF4EE; border:1.5px solid #9D380E; border-radius:6px; padding:3px 6px; font-size:9px; color:#9D380E; line-height:1.3; }
+.speaker b { font-size:10px; }
 
 /* 圓桌（N位，動態角度排列） */
 .round-wrap { position:absolute; }
@@ -119,6 +121,7 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 
     <div class="door-bar" style="left:620px; top:10px; width:130px;">大門口（舞台區）</div>
     <div class="corridor" style="left:675px; top:45px; width:30px; height:1294px;"></div>
+    <div class="speaker" style="left:770px; top:6px; width:126px;" title="音響擺放處，此處音量較大"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9D380E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#F6E6DE"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><div><b>音響擺放處</b><br>此處音量較大，不建議嬰幼兒入座</div></div>
     <div class="corridor-arrow" style="left:675px; top:1304px;">↓</div>
 
     <!-- 左側：主桌 / 雅座 / 音控台 / 吧台 -->
@@ -538,6 +541,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var parts = [cmp('兒童餐', kidMeal, FORM.paxKidMeal), cmp('兒童椅', chair, FORM.kidsChair)];
     if (share) parts.push('兒童共餐 <b>' + share + '</b>');
     if (noDish) parts.push('<span style="color:#c8860a">未選餐 <b>' + noDish + '</b></span>');
+    if (tables.t1 && tables.t1.seats.some(function(s){ return s.name.trim() && s.kid; })) parts.push('<span style="color:#c0392b">⚠️ ' + escH(tables.t1.label) + '靠近音響擺放處，音量較大，嬰幼兒建議改坐其他桌</span>');
     var el = document.getElementById('kidCheck'); if (el) el.innerHTML = '｜ ' + parts.join('　');
   }
 
@@ -717,7 +721,8 @@ document.addEventListener('DOMContentLoaded', function () {
       '.restroom{background:#F1F1F1;color:#777;font-size:7pt;padding:1.2mm 3mm;border-radius:1mm}' +
       '.bottom{display:grid;grid-template-columns:1fr 2.2fr;gap:3mm;margin-top:2.5mm;align-items:stretch}' +
       '.study-empty{border:.4mm dashed #bbb;border-radius:2mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6mm;color:#666;font-size:8pt;min-height:20mm}' +
-      '.study-empty small{font-size:6.5pt;color:#aaa}';
+      '.study-empty small{font-size:6.5pt;color:#aaa}' +
+      '.spk{display:flex;align-items:center;gap:1.2mm;background:#FFF4EE;border:.3mm solid #9D380E;border-radius:1mm;padding:.6mm 2mm;font-size:6.8pt;color:#9D380E;margin-bottom:-.6mm}';
 
     var body = '<div class="ps">' +
       '<div class="head"><div class="ttl">' + escH((d || '') + (s ? ' ' + s : '')) + '　大院子 座位表' +
@@ -736,7 +741,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<div class="restroom">← 往洗手間／化妝室</div>' +
         '</div>' +
         '<div class="right">' +
-          (t1Type === 'couple' ? coupleCard('t1') : roundCard('t1')) + roundCard('t2') + squareCard('t3') + squareCard('t4') + squareCard('t5') + squareCard('t6') + roundCard('t7') + roundCard('t8') +
+          '<div class="spk">'+'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9D380E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#F6E6DE"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>'+'<b>音響擺放處</b>　音量較大，不建議嬰幼兒入座</div>' + (t1Type === 'couple' ? coupleCard('t1') : roundCard('t1')) + roundCard('t2') + squareCard('t3') + squareCard('t4') + squareCard('t5') + squareCard('t6') + roundCard('t7') + roundCard('t8') +
         '</div>' +
       '</div>' +
       '<div class="bottom">' + studyHtml + longTable('t9') + '</div>' +
