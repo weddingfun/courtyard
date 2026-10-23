@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 檔案：seating_courtyard.html｜版本：2026-10-16c -->
+<!-- 檔案：seating_courtyard.html｜版本：2026-10-23 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -121,7 +121,7 @@ h1 { font-size:16px; letter-spacing:2px; text-align:center; margin-bottom:2px; }
 
     <div class="door-bar" style="left:620px; top:10px; width:130px;">大門口（舞台區）</div>
     <div class="corridor" style="left:675px; top:45px; width:30px; height:1294px;"></div>
-    <div class="speaker" style="left:770px; top:6px; width:126px;" title="音響擺放處，此處音量較大"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9D380E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#F6E6DE"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><div><b>音響擺放處</b><br>此處音量較大，不建議嬰幼兒入座</div></div>
+    <div class="speaker" style="left:770px; top:6px; width:126px;" title="音響擺放處，音量較大"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9D380E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#F6E6DE"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><div><b>音響擺放處</b><br>音量較大，不建議嬰幼兒入座</div></div>
     <div class="corridor-arrow" style="left:675px; top:1304px;">↓</div>
 
     <!-- 左側：主桌 / 雅座 / 音控台 / 吧台 -->
@@ -497,15 +497,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // 三～六桌：長方桌，上排 2 位、下排 2 位（和場地原本的座位表一樣，名字靠桌子、餐點在外側）
+  function renderSquare(key) {
+    var wrap = document.getElementById(key + 'Wrap'), tb = document.getElementById(key + 'Table');
+    tb.style.width = '100px'; tb.style.height = '30px';
+    Array.prototype.slice.call(wrap.querySelectorAll('.r-seat')).forEach(function(el){ el.remove(); });
+    tb.querySelector('.table-mid').textContent = tables[key].label;
+    var pos = [{ x: 30, y: 16, top: true }, { x: 82, y: 16, top: true }, { x: 30, y: 96 }, { x: 82, y: 96 }];
+    for (var i = 0; i < tables[key].seats.length && i < 4; i++) {
+      var cell = makeSeatCell(key, i);
+      cell.classList.add('r-seat');
+      cell.style.width = '50px';
+      if (pos[i].top) cell.style.flexDirection = 'column-reverse';   // 上排：餐點在上、名字靠桌
+      cell.style.left = pos[i].x + 'px'; cell.style.top = pos[i].y + 'px';
+      wrap.appendChild(cell);
+    }
+  }
+
   function render() {
     renderRound('yz1', document.getElementById('yz1Wrap'), document.getElementById('yz1Table'), 110, 60, 180);
     renderRound('yz2', document.getElementById('yz2Wrap'), document.getElementById('yz2Table'), 110, 60, 180);
     renderT1();
     renderRound('t2', document.getElementById('t2Wrap'), document.getElementById('t2Table'), 124, 124);
-    renderRound('t3', document.getElementById('t3Wrap'), document.getElementById('t3Table'), 112, 112);
-    renderRound('t4', document.getElementById('t4Wrap'), document.getElementById('t4Table'), 112, 112);
-    renderRound('t5', document.getElementById('t5Wrap'), document.getElementById('t5Table'), 112, 112);
-    renderRound('t6', document.getElementById('t6Wrap'), document.getElementById('t6Table'), 112, 112);
+    renderSquare('t3');
+    renderSquare('t4');
+    renderSquare('t5');
+    renderSquare('t6');
     renderRound('t7', document.getElementById('t7Wrap'), document.getElementById('t7Table'), 124, 124);
     renderRound('t8', document.getElementById('t8Wrap'), document.getElementById('t8Table'), 124, 124);
     renderLongH('mainTable', document.getElementById('mainTableBox'));
